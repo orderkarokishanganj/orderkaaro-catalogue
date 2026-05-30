@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ORDER KARO – Product Catalogue</title>
+<title>ORDER KAARO – Product Catalogue</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -74,8 +74,8 @@
   <div class="brand-row">
     <div class="brand-icon">🛒</div>
     <div>
-      <div class="brand-name">ORDER KARO</div>
-      <div class="brand-tag">Fresh groceries, delivered fast</div>
+      <div class="brand-name">ORDER KAARO</div>
+      <div class="brand-tag">Chat Kaaro,Order Kaaro,Relax Kaaro</div>
     </div>
   </div>
   <div class="search-bar">
@@ -106,7 +106,7 @@ const products = [
   {id:"P002",name:"Basmati Rice",cat:"Staples",emoji:"🍚",price:180,unit:"5 kg"},
   {id:"P003",name:"Tata Salt",cat:"Staples",emoji:"🧂",price:28,unit:"1 kg"},
   {id:"P004",name:"Sugar",cat:"Staples",emoji:"🍬",price:55,unit:"1 kg"},
-  {id:"P005",name:"Poha",cat:"Staples",emoji:"🍛",price:45,unit:"500 g"},
+  {id:"P005",name:"Poha/Churra",cat:"Staples",emoji:"🍛",price:45,unit:"500 g"},
   {id:"P006",name:"Chana Dal",cat:"Pulses",emoji:"🫘",price:120,unit:"1 kg"},
   {id:"P007",name:"Moong Dal",cat:"Pulses",emoji:"🫛",price:140,unit:"1 kg"},
   {id:"P008",name:"Toor Dal",cat:"Pulses",emoji:"🟡",price:130,unit:"1 kg"},
@@ -219,7 +219,7 @@ function sendToWhatsApp() {
   const items = Object.entries(cart).filter(([,q])=>q>0);
   if (!items.length) return;
   const total = items.reduce((s,[id,q]) => { const p=products.find(x=>x.id===id); return s+p.price*q; }, 0);
-  let msg = "🛒 *ORDER KARO – New Order*\n";
+  let msg = "🛒 *ORDER KAARO – New Order*\n";
   msg += "━━━━━━━━━━━━━━━━━━━━\n";
   msg += "*Items Ordered:*\n";
   items.forEach(([id,q]) => {
