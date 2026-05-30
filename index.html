@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order Kaaro – Kishanganj Grocery Delivery</title>
+  <title>Order Kaaro – Kishangnaj Grocery Delivery</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -304,14 +304,14 @@
   <div class="header-top">
     <div class="logo">
       <span class="logo-main">🛒 Order Kaaro</span>
-      <span class="logo-sub">Kishanganj Grocery Delivery</span>
+      <span class="logo-sub">Kishangnaj Grocery Delivery</span>
     </div>
     <div class="header-location">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
         <circle cx="12" cy="9" r="2.5"/>
       </svg>
-      Kishanganj
+      Kishangnaj
     </div>
     <button class="cart-btn" onclick="openCart()">
       🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
@@ -429,242 +429,30 @@
   ];
 
   const categories = [
-  export const categories = [
-  {
-    name: "Soft Drinks",
-    sub: "Thanda peeyo, fresh raho!",
-    emoji: "🥤",
-    products: [
-      { brand: "Sprite", price: 40 },
-      { brand: "Thums Up", price: 40 },
-      { brand: "Coca Cola", price: 40 },
-      { brand: "Limca", price: 40 },
-      { brand: "Campa", price: 20 }
-    ]
-  },
+    { name: "Soft Drinks", sub: "Thanda peeyo, fresh raho!", emoji: "🥤", brands: ["Sprite", "Thums Up", "Coca Cola", "Limca", "Campa"] },
+    { name: "Energy Drinks", sub: "Instant energy boost karo", emoji: "⚡", brands: ["Red Bull", "Monster", "Campa"] },
+    { name: "Juices & Drinks", sub: "Natural & tasty drinks", emoji: "🧃", brands: ["Maaza"] },
+    { name: "Oil & Ghee", sub: "Khana pakao sahi tel se", emoji: "🛢️", brands: ["Independence", "Fortune", "Kings"] },
+    { name: "Atta & Flours", sub: "Ghar ki soft roti ke liye", emoji: "🌾", brands: ["Aashirvaad"] },
+    { name: "Detergents & Fabric Care", sub: "Kapde saaf, chamakdar!", emoji: "🧺", brands: ["Surf Excel", "Rin", "Easy"] },
+    { name: "Dry Fruits & Nuts", sub: "Healthy snacking, daily nutrition", emoji: "🥜", brands: ["Wonderland Foods"] },
+    { name: "Noodles & Pasta", sub: "2-minute mein ready!", emoji: "🍜", brands: ["Maggi", "Sil"] },
+    { name: "Soaps, Face & Handwash", sub: "Saaf raho, healthy raho", emoji: "🧼", brands: ["Pears", "Lifebuoy", "Lux", "Godrej", "Velvet", "Get Real"] },
+    { name: "Hair Oil, Shampoo & Gel", sub: "Baal strong, shining rakho", emoji: "💆", brands: ["Dabur", "Bajaj", "Get Real", "Velvet", "Nihar"] },
+    { name: "Chocolates & Candies", sub: "Meetha khaao, khush raho!", emoji: "🍫", brands: ["Toffyman", "Lotus On & On", "Ravalgaon", "KitKat", "Munch"] },
+    { name: "Salt & Sugar", sub: "Kitchen essentials, daily zaroorat", emoji: "🧂", brands: ["Tata", "Dhampur"] },
+    { name: "Dairy Products", sub: "Fresh & nutritious dairy", emoji: "🥛", brands: ["Amul", "Nestle"] },
+    { name: "Oral Care", sub: "Healthy teeth, fresh breath!", emoji: "🦷", brands: ["Colgate", "Dabur", "Sensodyne"] },
+    { name: "Dishwash", sub: "Bartan chamkao jaldi se", emoji: "🍽️", brands: ["Vim"] },
+    { name: "Water & Soda", sub: "Pure aur refreshing", emoji: "💧", brands: ["Kinley"] },
+    { name: "Nutrition Drinks", sub: "Strong bano, healthy raho", emoji: "🏃", brands: ["Horlicks"] },
+    { name: "Jams, Sauces & Spreads", sub: "Breakfast aur snacks ke liye", emoji: "🍯", brands: ["Sil", "Dabur", "Kissan"] },
+    { name: "Dals & Pulses", sub: "Protein-rich, dal roz khaao", emoji: "🫘", brands: ["Ruchi Gold", "Veer", "Surajmukhi"] },
+    { name: "Floor Cleaners & Disinfectants", sub: "Ghar ko saaf aur germ-free rakho", emoji: "🧹", brands: ["Harpic"] },
+    { name: "Ready To Cook & Eat", sub: "Jaldi khana, no tension!", emoji: "🍲", brands: ["Knorr"] },
+    { name: "Biscuits, Cakes & Cookies", sub: "Tea time ka best saathi!", emoji: "🍪", brands: ["Parle", "Marigold", "Good Day", "Britannia", "Bisk Farm", "Sunfeast"] },
+  ];
 
-  {
-    name: "Energy Drinks",
-    sub: "Instant energy boost karo",
-    emoji: "⚡",
-    products: [
-      { brand: "Red Bull", price: 125 },
-      { brand: "Monster", price: 125 },
-      { brand: "Campa Energy", price: 20 }
-    ]
-  },
-
-  {
-    name: "Juices & Drinks",
-    sub: "Natural & tasty drinks",
-    emoji: "🧃",
-    products: [
-      { brand: "Maaza", price: 40 }
-    ]
-  },
-
-  {
-    name: "Oil & Ghee",
-    sub: "Khana pakao sahi tel se",
-    emoji: "🛢️",
-    products: [
-      { brand: "Independence", price: 180 },
-      { brand: "Fortune", price: 185 },
-      { brand: "Kings", price: 175 }
-    ]
-  },
-
-  {
-    name: "Atta & Flours",
-    sub: "Ghar ki soft roti ke liye",
-    emoji: "🌾",
-    products: [
-      { brand: "Aashirvaad", price: 290 }
-    ]
-  },
-
-  {
-    name: "Detergents & Fabric Care",
-    sub: "Kapde saaf, chamakdar!",
-    emoji: "🧺",
-    products: [
-      { brand: "Surf Excel", price: 120 },
-      { brand: "Rin", price: 65 },
-      { brand: "Easy", price: 55 }
-    ]
-  },
-
-  {
-    name: "Dry Fruits & Nuts",
-    sub: "Healthy snacking, daily nutrition",
-    emoji: "🥜",
-    products: [
-      { brand: "Wonderland Foods", price: 220 }
-    ]
-  },
-
-  {
-    name: "Noodles & Pasta",
-    sub: "2-minute mein ready!",
-    emoji: "🍜",
-    products: [
-      { brand: "Maggi", price: 15 },
-      { brand: "Sil", price: 40 }
-    ]
-  },
-
-  {
-    name: "Soaps, Face & Handwash",
-    sub: "Saaf raho, healthy raho",
-    emoji: "🧼",
-    products: [
-      { brand: "Pears", price: 55 },
-      { brand: "Lifebuoy", price: 35 },
-      { brand: "Lux", price: 38 },
-      { brand: "Godrej", price: 35 },
-      { brand: "Velvet", price: 50 },
-      { brand: "Get Real", price: 60 }
-    ]
-  },
-
-  {
-    name: "Hair Oil, Shampoo & Gel",
-    sub: "Baal strong, shining rakho",
-    emoji: "💆",
-    products: [
-      { brand: "Dabur", price: 75 },
-      { brand: "Bajaj", price: 70 },
-      { brand: "Get Real", price: 90 },
-      { brand: "Velvet", price: 85 },
-      { brand: "Nihar", price: 65 }
-    ]
-  },
-
-  {
-    name: "Chocolates & Candies",
-    sub: "Meetha khaao, khush raho!",
-    emoji: "🍫",
-    products: [
-      { brand: "Toffyman", price: 10 },
-      { brand: "Lotus On & On", price: 20 },
-      { brand: "Ravalgaon", price: 10 },
-      { brand: "KitKat", price: 20 },
-      { brand: "Munch", price: 10 }
-    ]
-  },
-
-  {
-    name: "Salt & Sugar",
-    sub: "Kitchen essentials, daily zaroorat",
-    emoji: "🧂",
-    products: [
-      { brand: "Tata Salt", price: 30 },
-      { brand: "Dhampur Sugar", price: 55 }
-    ]
-  },
-
-  {
-    name: "Dairy Products",
-    sub: "Fresh & nutritious dairy",
-    emoji: "🥛",
-    products: [
-      { brand: "Amul", price: 30 },
-      { brand: "Nestle", price: 35 }
-    ]
-  },
-
-  {
-    name: "Oral Care",
-    sub: "Healthy teeth, fresh breath!",
-    emoji: "🦷",
-    products: [
-      { brand: "Colgate", price: 65 },
-      { brand: "Dabur", price: 60 },
-      { brand: "Sensodyne", price: 140 }
-    ]
-  },
-
-  {
-    name: "Dishwash",
-    sub: "Bartan chamkao jaldi se",
-    emoji: "🍽️",
-    products: [
-      { brand: "Vim", price: 30 }
-    ]
-  },
-
-  {
-    name: "Water & Soda",
-    sub: "Pure aur refreshing",
-    emoji: "💧",
-    products: [
-      { brand: "Kinley", price: 20 }
-    ]
-  },
-
-  {
-    name: "Nutrition Drinks",
-    sub: "Strong bano, healthy raho",
-    emoji: "🏃",
-    products: [
-      { brand: "Horlicks", price: 250 }
-    ]
-  },
-
-  {
-    name: "Jams, Sauces & Spreads",
-    sub: "Breakfast aur snacks ke liye",
-    emoji: "🍯",
-    products: [
-      { brand: "Sil", price: 90 },
-      { brand: "Dabur", price: 140 },
-      { brand: "Kissan", price: 120 }
-    ]
-  },
-
-  {
-    name: "Dals & Pulses",
-    sub: "Protein-rich, dal roz khaao",
-    emoji: "🫘",
-    products: [
-      { brand: "Ruchi Gold", price: 130 },
-      { brand: "Veer", price: 120 },
-      { brand: "Surajmukhi", price: 125 }
-    ]
-  },
-
-  {
-    name: "Floor Cleaners & Disinfectants",
-    sub: "Ghar ko saaf aur germ-free rakho",
-    emoji: "🧹",
-    products: [
-      { brand: "Harpic", price: 105 }
-    ]
-  },
-
-  {
-    name: "Ready To Cook & Eat",
-    sub: "Jaldi khana, no tension!",
-    emoji: "🍲",
-    products: [
-      { brand: "Knorr", price: 50 }
-    ]
-  },
-
-  {
-    name: "Biscuits, Cakes & Cookies",
-    sub: "Tea time ka best saathi!",
-    emoji: "🍪",
-    products: [
-      { brand: "Parle", price: 10 },
-      { brand: "Marigold", price: 10 },
-      { brand: "Good Day", price: 35 },
-      { brand: "Britannia", price: 30 },
-      { brand: "Bisk Farm", price: 20 },
-      { brand: "Sunfeast", price: 30 }
-    ]
-  }
-];
   let cart = {};
 
   function getDiscount(mrp, special) {
