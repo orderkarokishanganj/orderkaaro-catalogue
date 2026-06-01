@@ -1,3 +1,6 @@
+bash
+
+cat > /mnt/user-data/outputs/order-kaaro.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,6 +72,72 @@
       display: flex; align-items: center; justify-content: center;
     }
 
+    /* SEARCH BAR */
+    .search-bar-wrap {
+      padding: 10px 14px;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 68px;
+      z-index: 95;
+    }
+    .search-input-row {
+      display: flex;
+      align-items: center;
+      background: var(--gray-bg);
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 0 12px;
+      gap: 8px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input-row:focus-within {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(26,138,60,0.12);
+      background: white;
+    }
+    .search-icon { font-size: 1rem; flex-shrink: 0; opacity: 0.6; }
+    #searchInput {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--dark);
+      padding: 10px 0;
+      outline: none;
+    }
+    #searchInput::placeholder { color: #aaa; }
+    .search-clear {
+      background: none; border: none; cursor: pointer;
+      color: var(--gray-text); font-size: 1rem;
+      padding: 4px; border-radius: 50%;
+      display: none; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .search-clear.visible { display: flex; }
+    .search-clear:hover { background: #f0f0f0; }
+
+    /* SEARCH RESULTS */
+    #searchResultsWrap {
+      display: none;
+      padding: 12px 14px 80px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    #searchResultsWrap.visible { display: block; }
+    .search-result-title {
+      font-size: 0.8rem; font-weight: 700; color: var(--gray-text);
+      margin-bottom: 10px; letter-spacing: 0.3px;
+    }
+    .search-highlight { color: var(--green); }
+    .no-results {
+      text-align: center; padding: 40px 20px;
+      color: var(--gray-text);
+    }
+    .no-results-icon { font-size: 3rem; margin-bottom: 10px; }
+    .no-results p { font-size: 0.85rem; line-height: 1.6; }
+
     /* QUICK FILTER BANNER */
     .deals-banner {
       background: linear-gradient(90deg, #fff7ed 0%, #fef3c7 100%);
@@ -92,7 +161,7 @@
       background: white; padding: 9px 12px;
       display: flex; gap: 7px; overflow-x: auto;
       scrollbar-width: none; border-bottom: 1px solid #e5e7eb;
-      position: sticky; top: 68px; z-index: 90;
+      position: sticky; top: 120px; z-index: 90;
     }
     .cat-scroll::-webkit-scrollbar { display: none; }
     .cat-pill {
@@ -163,6 +232,11 @@
       font-size: 0.6rem; font-weight: 800;
       padding: 2px 6px; border-radius: 8px;
     }
+    .weight-badge {
+      background: #eff6ff; color: #1d4ed8;
+      font-size: 0.6rem; font-weight: 700;
+      padding: 2px 6px; border-radius: 8px;
+    }
 
     /* QTY CONTROLS */
     .qty-ctrl {
@@ -205,7 +279,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
     .brand-btn:hover { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
-    .brand-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); opacity: 0.5; }
     .brand-icon {
       width: 38px; height: 38px; border-radius: 8px;
       background: var(--gray-bg); flex-shrink: 0;
@@ -230,7 +303,7 @@
       width: 100%; max-width: 540px;
       background: white; border-radius: 20px 20px 0 0;
       box-shadow: 0 -4px 30px rgba(0,0,0,0.18);
-      z-index: 201; max-height: 80vh;
+      z-index: 201; max-height: 85vh;
       display: flex; flex-direction: column;
       transform: translateX(-50%) translateY(100%);
       transition: transform 0.35s cubic-bezier(.4,0,.2,1);
@@ -258,6 +331,7 @@
     .cart-item-info { flex: 1; min-width: 0; }
     .cart-item-name { font-size: 0.8rem; font-weight: 600; line-height: 1.3; }
     .cart-item-sub { font-size: 0.72rem; color: var(--green); font-weight: 700; margin-top: 1px; }
+    .cart-item-weight { font-size: 0.65rem; color: #1d4ed8; font-weight: 600; }
     .cart-remove {
       background: none; border: none; color: var(--red);
       font-size: 1rem; cursor: pointer; padding: 2px 6px;
@@ -265,11 +339,43 @@
     .cart-footer {
       padding: 12px 16px; border-top: 1px solid #e5e7eb; background: #fafafa;
     }
+
+    /* DELIVERY BREAKDOWN */
+    .delivery-breakdown {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+    .delivery-breakdown-title {
+      font-size: 0.72rem; font-weight: 800; color: #1d4ed8;
+      display: flex; align-items: center; gap: 5px; margin-bottom: 6px;
+    }
+    .delivery-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.75rem; padding: 2px 0; color: var(--dark);
+    }
+    .delivery-row .label { color: var(--gray-text); font-weight: 500; }
+    .delivery-row .value { font-weight: 700; }
+    .delivery-row.total-row {
+      margin-top: 6px; padding-top: 6px;
+      border-top: 1.5px dashed #bfdbfe;
+      font-size: 0.8rem;
+    }
+    .delivery-row.total-row .value { color: var(--green); font-size: 1rem; font-weight: 800; }
+    .delivery-tier-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #1d4ed8; color: white;
+      font-size: 0.6rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 10px;
+    }
+
     .cart-total {
       display: flex; justify-content: space-between;
-      font-size: 1rem; font-weight: 800; margin-bottom: 12px;
+      font-size: 0.88rem; font-weight: 700; margin-bottom: 10px; color: var(--dark);
     }
-    .cart-total .total-amt { color: var(--green); }
+    .cart-total .total-amt { color: var(--green); font-size: 1rem; font-weight: 800; }
     .whatsapp-btn {
       width: 100%; background: #25D366; color: white; border: none;
       border-radius: 14px; padding: 14px;
@@ -306,7 +412,10 @@
       background: rgba(255,255,255,0.22); border-radius: 10px;
       padding: 2px 8px; font-size: 0.75rem;
     }
-    .fc-right { font-size: 0.88rem; }
+    .fc-right { font-size: 0.88rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0; }
+    .fc-subtotal { font-size: 0.88rem; font-weight: 800; }
+    .fc-delivery { font-size: 0.65rem; opacity: 0.85; }
+
     /* CUSTOMER DETAILS MODAL */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
@@ -391,6 +500,15 @@
   </div>
 </header>
 
+<!-- SEARCH BAR -->
+<div class="search-bar-wrap">
+  <div class="search-input-row">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search karo – atta, oil, soap, maggi..." oninput="handleSearch(this.value)" />
+    <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
 <!-- QUICK FILTER CHIPS -->
 <div class="deals-banner">
   <div class="deal-chip active">🔥 Top Deals</div>
@@ -406,7 +524,13 @@
 <!-- CATEGORY PILLS (auto-generated) -->
 <div class="cat-scroll" id="catScroll"></div>
 
-<main>
+<!-- SEARCH RESULTS -->
+<div id="searchResultsWrap">
+  <div class="search-result-title" id="searchResultTitle"></div>
+  <div class="deals-grid" id="searchResults"></div>
+</div>
+
+<main id="mainContent">
   <!-- TOP DEALS -->
   <div class="section-title">
     🔥 Top Deals – Aaj Ki Best Prices
@@ -424,7 +548,10 @@
     🛒 View Cart
     <span class="fc-badge" id="fcBadge">0 items</span>
   </div>
-  <div class="fc-right">₹<span id="fcTotal">0</span> →</div>
+  <div class="fc-right">
+    <span class="fc-subtotal">₹<span id="fcTotal">0</span></span>
+    <span class="fc-delivery" id="fcDelivery">+ ₹0 delivery</span>
+  </div>
 </button>
 
 <!-- CART OVERLAY -->
@@ -438,17 +565,8 @@
     <button class="cart-close" onclick="closeCart()">✕</button>
   </div>
   <div class="cart-items" id="cartItems"></div>
-  <div class="cart-footer">
-    <div class="cart-total">
-      <span>Total Amount</span>
-      <span class="total-amt">₹<span id="cartTotal">0</span></span>
-    </div>
-    <button class="whatsapp-btn" onclick="sendWhatsApp()">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-      </svg>
-      Order on WhatsApp – Abhi Bhejo!
-    </button>
+  <div class="cart-footer" id="cartFooter">
+    <!-- dynamically rendered -->
   </div>
 </div>
 
@@ -489,51 +607,42 @@
 <script>
   const WHATSAPP_NUMBER = "918102486293";
 
+  // ─── WEIGHT EXTRACTION UTILITY ───────────────────────────────────────
+  // Parses product name to extract weight in GRAMS
+  function extractWeightGrams(name) {
+    const n = name.toLowerCase();
+    // match patterns like: 5 kg, 5kg, 500 g, 500g, 750 ml, 750ml, 1 l, 1l, 200 ml
+    const kgMatch = n.match(/(\d+(?:\.\d+)?)\s*kg/);
+    const gMatch  = n.match(/(\d+(?:\.\d+)?)\s*g(?!el|et|od|ar|reen|old|em)/); // exclude 'gel','get','god','gar','green','gold','gem'
+    const lMatch  = n.match(/(\d+(?:\.\d+)?)\s*l(?:\b|iter)/);
+    const mlMatch = n.match(/(\d+(?:\.\d+)?)\s*ml/);
+
+    if (kgMatch)  return parseFloat(kgMatch[1]) * 1000;
+    if (gMatch)   return parseFloat(gMatch[1]);
+    if (lMatch)   return parseFloat(lMatch[1]) * 1000;
+    if (mlMatch)  return parseFloat(mlMatch[1]);
+    return 250; // default 250g if no weight found
+  }
+
+  // ─── DELIVERY CHARGE CALCULATION ─────────────────────────────────────
+  function getDeliveryInfo(totalWeightGrams) {
+    const kg = totalWeightGrams / 1000;
+    if (kg <= 5)       return { charge: 50,  label: "Up to 5 kg",      tier: "🟢 Light" };
+    if (kg <= 11)      return { charge: 80,  label: "5 kg – 11 kg",    tier: "🟡 Medium" };
+    return               { charge: 120, label: "Above 11 kg",     tier: "🔴 Heavy" };
+  }
+
+  // ─── TOP DEALS DATA ───────────────────────────────────────────────────
   const topDeals = [
-    {
-      id: 1,
-      tag: "Atta & Flours",
-      name: "Aashirvaad Shudh Chakki Atta 5 kg",
-      hinglish: "Aashirvaad Atta 5 kg – Ghar ki roti ke liye best!",
-      mrp: 283, special: 220, emoji: "🌾", code: "490000038"
-    },
-    {
-      id: 2,
-      tag: "Oil & Ghee",
-      name: "Fortune Refined Soyabean Oil 750 ml Pouch",
-      hinglish: "Fortune Soyabean Oil – Khana pakao healthy tarike se",
-      mrp: 160, special: 144.5, emoji: "🛢️", code: "494626791"
-    },
-    {
-      id: 3,
-      tag: "Oil & Ghee",
-      name: "Kings Refined Soyabean Oil 750 g",
-      hinglish: "Kings Soyabean Oil – Value for money, daily cooking ke liye",
-      mrp: 140, special: 128, emoji: "🫙", code: "490563275"
-    },
-    {
-      id: 4,
-      tag: "Dry Fruits & Nuts",
-      name: "Wonderland Foods Premium Health Crunch Almonds 500 g",
-      hinglish: "Wonderland Badam 500g – Sehat ke liye best deal!",
-      mrp: 799, special: 405, emoji: "🥜", code: "492404584"
-    },
-    {
-      id: 5,
-      tag: "Dry Fruits & Nuts",
-      name: "Wonderland Foods Cashews 200 g",
-      hinglish: "Wonderland Kaju 200g – Snacking ke liye perfect",
-      mrp: 389, special: 160, emoji: "🌰", code: "491439111"
-    },
-    {
-      id: 6,
-      tag: "Dry Fruits & Nuts",
-      name: "Wonderland Foods Raw Cashews 500 g",
-      hinglish: "Wonderland Raw Kaju 500g – Ghar pe bhuno ya khaana mein daalo",
-      mrp: 770, special: 399, emoji: "🌰", code: "491391416"
-    },
+    { id: 1, tag: "Atta & Flours", name: "Aashirvaad Shudh Chakki Atta 5 kg", hinglish: "Aashirvaad Atta 5 kg – Ghar ki roti ke liye best!", mrp: 283, special: 220, emoji: "🌾" },
+    { id: 2, tag: "Oil & Ghee", name: "Fortune Refined Soyabean Oil 750 ml Pouch", hinglish: "Fortune Soyabean Oil – Khana pakao healthy tarike se", mrp: 160, special: 144.5, emoji: "🛢️" },
+    { id: 3, tag: "Oil & Ghee", name: "Kings Refined Soyabean Oil 750 g", hinglish: "Kings Soyabean Oil – Value for money, daily cooking ke liye", mrp: 140, special: 128, emoji: "🫙" },
+    { id: 4, tag: "Dry Fruits & Nuts", name: "Wonderland Foods Premium Health Crunch Almonds 500 g", hinglish: "Wonderland Badam 500g – Sehat ke liye best deal!", mrp: 799, special: 405, emoji: "🥜" },
+    { id: 5, tag: "Dry Fruits & Nuts", name: "Wonderland Foods Cashews 200 g", hinglish: "Wonderland Kaju 200g – Snacking ke liye perfect", mrp: 389, special: 160, emoji: "🌰" },
+    { id: 6, tag: "Dry Fruits & Nuts", name: "Wonderland Foods Raw Cashews 500 g", hinglish: "Wonderland Raw Kaju 500g – Ghar pe bhuno ya khaana mein daalo", mrp: 770, special: 399, emoji: "🌰" },
   ];
 
+  // ─── CATEGORIES DATA ──────────────────────────────────────────────────
   const categories = [
     { name: "Soft Drinks", sub: "Thanda peeyo, fresh raho!", emoji: "🥤", brands: [
       { name: "Sprite 750ml", emoji: "🟢", mrp: 40, special: 35 },
@@ -640,17 +749,41 @@
     ]},
   ];
 
+  // ─── BUILD ALL-ITEMS FLAT LIST FOR SEARCH ────────────────────────────
+  let allItems = [];
+  topDeals.forEach(d => {
+    allItems.push({ key: `deal_${d.id}`, name: d.name, tag: d.tag, emoji: d.emoji, mrp: d.mrp, special: d.special, type: "deal", dealId: d.id });
+  });
+  categories.forEach(cat => {
+    cat.brands.forEach(b => {
+      const key = `brand_${b.name.replace(/\s+/g, '_')}`;
+      allItems.push({ key, name: b.name, tag: cat.name, emoji: b.emoji, mrp: b.mrp, special: b.special, type: "brand" });
+    });
+  });
+
   let cart = {};
 
+  // ─── HELPERS ─────────────────────────────────────────────────────────
   function getDiscount(mrp, special) {
     return Math.round(((mrp - special) / mrp) * 100);
   }
 
-  /* RENDER TOP DEALS */
-  function renderDeals() {
-    const grid = document.getElementById("dealsGrid");
-    grid.innerHTML = topDeals.map((item, i) => `
-      <div class="deal-card" style="animation-delay:${i * 0.07}s">
+  function cartTotals() {
+    const items = Object.values(cart);
+    const totalQty    = items.reduce((s, i) => s + i.qty, 0);
+    const subtotal    = items.reduce((s, i) => s + (i.special * i.qty), 0);
+    const totalWeight = items.reduce((s, i) => s + (extractWeightGrams(i.name) * i.qty), 0);
+    const delivery    = items.length === 0 ? 0 : getDeliveryInfo(totalWeight);
+    return { totalQty, subtotal, totalWeight, delivery };
+  }
+
+  // ─── RENDER HELPERS ───────────────────────────────────────────────────
+  function cardHTML(item, ctrlId) {
+    const disc = getDiscount(item.mrp, item.special);
+    const wg   = extractWeightGrams(item.name);
+    const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
+    return `
+      <div class="deal-card">
         <div class="deal-img">${item.emoji}</div>
         <div class="deal-info">
           <div class="deal-tag">${item.tag}</div>
@@ -658,35 +791,73 @@
           <div class="price-row">
             <span class="price-special">₹${item.special}</span>
             <span class="price-mrp">MRP ₹${item.mrp}</span>
-            <span class="discount-badge">${getDiscount(item.mrp, item.special)}% OFF</span>
+            <span class="discount-badge">${disc}% OFF</span>
+            <span class="weight-badge">⚖️ ${wLabel}</span>
           </div>
         </div>
-        <div id="ctrl_${item.id}">
-          <button class="add-btn" onclick="addToCart(${item.id})">+ ADD</button>
+        <div id="${ctrlId}">
+          ${addBtnHTML(item.key || `deal_${item.dealId}`, item)}
         </div>
-      </div>
-    `).join("");
+      </div>`;
   }
 
-  /* RENDER CATEGORIES */
+  function addBtnHTML(key, item) {
+    const qty = cart[key] ? cart[key].qty : 0;
+    if (qty === 0) {
+      return `<button class="add-btn" onclick="addItemToCart('${key}',${JSON.stringify(item).replace(/'/g,"&#39;")})">+ ADD</button>`;
+    }
+    return `<div class="qty-ctrl">
+      <button class="qty-btn" onclick="decrementItem('${key}')">−</button>
+      <span class="qty-num">${qty}</span>
+      <button class="qty-btn" onclick="incrementItem('${key}')">+</button>
+    </div>`;
+  }
+
+  // ─── RENDER TOP DEALS ─────────────────────────────────────────────────
+  function renderDeals() {
+    const grid = document.getElementById("dealsGrid");
+    grid.innerHTML = topDeals.map((item, i) => {
+      const disc = getDiscount(item.mrp, item.special);
+      const wg   = extractWeightGrams(item.name);
+      const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
+      return `
+        <div class="deal-card" style="animation-delay:${i * 0.07}s">
+          <div class="deal-img">${item.emoji}</div>
+          <div class="deal-info">
+            <div class="deal-tag">${item.tag}</div>
+            <div class="deal-name">${item.name}</div>
+            <div class="price-row">
+              <span class="price-special">₹${item.special}</span>
+              <span class="price-mrp">MRP ₹${item.mrp}</span>
+              <span class="discount-badge">${disc}% OFF</span>
+              <span class="weight-badge">⚖️ ${wLabel}</span>
+            </div>
+          </div>
+          <div id="ctrl_deal_${item.id}">
+            <button class="add-btn" onclick="addDealToCart(${item.id})">+ ADD</button>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  // ─── RENDER CATEGORIES ────────────────────────────────────────────────
   function renderCategories() {
-    // Category pills
     document.getElementById("catScroll").innerHTML = categories.map((cat, i) =>
       `<button class="cat-pill" onclick="scrollToSection(${i})">${cat.emoji} ${cat.name}</button>`
     ).join("");
 
-    // Brand sections
     document.getElementById("brandSections").innerHTML = categories.map((cat, i) => `
       <div class="brand-section" id="cat_${i}">
-        <div class="section-title">
-          ${cat.emoji} ${cat.name}
-        </div>
+        <div class="section-title">${cat.emoji} ${cat.name}</div>
         <p style="font-size:0.72rem;color:var(--gray-text);margin:-6px 0 8px;font-style:italic">${cat.sub}</p>
         <div class="brand-grid">
           ${cat.brands.map(b => {
-            const disc = Math.round(((b.mrp - b.special) / b.mrp) * 100);
+            const disc = getDiscount(b.mrp, b.special);
+            const wg   = extractWeightGrams(b.name);
+            const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
+            const key  = `brand_${b.name.replace(/\s+/g, '_')}`;
             return `
-            <button class="brand-btn" onclick="addBrandToCart('${b.name}', '${cat.name}', '${b.emoji}', ${b.special})">
+            <button class="brand-btn" onclick="addBrandItemToCart('${key}','${b.name.replace(/'/g,"\\'")}','${cat.name}','${b.emoji}',${b.special},${b.mrp})">
               <div class="brand-icon">${b.emoji}</div>
               <div class="brand-details">
                 <span class="brand-name-text">${b.name}</span>
@@ -695,6 +866,7 @@
                   <span class="brand-mrp">₹${b.mrp}</span>
                   <span class="brand-disc">${disc}% OFF</span>
                 </div>
+                <div style="margin-top:2px"><span style="background:#eff6ff;color:#1d4ed8;font-size:0.58rem;font-weight:700;padding:1px 5px;border-radius:6px;">⚖️ ${wLabel}</span></div>
               </div>
             </button>`;
           }).join("")}
@@ -708,102 +880,179 @@
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  /* CART LOGIC */
-  function addToCart(id) {
+  // ─── CART OPERATIONS ──────────────────────────────────────────────────
+  function addDealToCart(id) {
     const item = topDeals.find(d => d.id === id);
-    if (!cart[id]) {
-      cart[id] = { ...item, qty: 1, type: "deal" };
-    } else {
-      cart[id].qty++;
-    }
-    renderQtyCtrl(id);
+    const key  = `deal_${id}`;
+    if (!cart[key]) cart[key] = { ...item, key, qty: 1 };
+    else cart[key].qty++;
+    refreshDealCtrl(id);
     updateCartUI();
   }
 
-  function removeFromCart(id) {
-    if (cart[id]) {
-      cart[id].qty--;
-      if (cart[id].qty <= 0) delete cart[id];
-    }
-    renderQtyCtrl(id);
+  function addBrandItemToCart(key, name, category, emoji, special, mrp) {
+    if (!cart[key]) cart[key] = { key, name, tag: category, emoji, special, mrp, qty: 1 };
+    else cart[key].qty++;
     updateCartUI();
+    // Flash the button
+    const btns = document.querySelectorAll(".brand-btn");
+    btns.forEach(btn => {
+      if (btn.querySelector(".brand-name-text") && btn.querySelector(".brand-name-text").textContent === name) {
+        btn.style.background = "var(--green-light)";
+        btn.style.borderColor = "var(--green)";
+        setTimeout(() => { btn.style.background = ""; btn.style.borderColor = ""; }, 700);
+      }
+    });
   }
 
-  function renderQtyCtrl(id) {
-    const ctrl = document.getElementById(`ctrl_${id}`);
+  function addItemToCart(key, item) {
+    if (!cart[key]) cart[key] = { ...item, key, qty: 1 };
+    else cart[key].qty++;
+    updateCartUI();
+    reRenderSearchResults();
+  }
+
+  function incrementItem(key) {
+    if (cart[key]) cart[key].qty++;
+    refreshDealCtrl_byKey(key);
+    updateCartUI();
+    reRenderSearchResults();
+    renderCartDrawer();
+  }
+
+  function decrementItem(key) {
+    if (cart[key]) {
+      cart[key].qty--;
+      if (cart[key].qty <= 0) delete cart[key];
+    }
+    refreshDealCtrl_byKey(key);
+    updateCartUI();
+    reRenderSearchResults();
+    renderCartDrawer();
+  }
+
+  function refreshDealCtrl(id) {
+    const key  = `deal_${id}`;
+    const ctrl = document.getElementById(`ctrl_deal_${id}`);
     if (!ctrl) return;
-    const qty = cart[id] ? cart[id].qty : 0;
+    const qty  = cart[key] ? cart[key].qty : 0;
     ctrl.innerHTML = qty === 0
-      ? `<button class="add-btn" onclick="addToCart(${id})">+ ADD</button>`
+      ? `<button class="add-btn" onclick="addDealToCart(${id})">+ ADD</button>`
       : `<div class="qty-ctrl">
-           <button class="qty-btn" onclick="removeFromCart(${id})">−</button>
+           <button class="qty-btn" onclick="decrementItem('deal_${id}')">−</button>
            <span class="qty-num">${qty}</span>
-           <button class="qty-btn" onclick="addToCart(${id})">+</button>
+           <button class="qty-btn" onclick="incrementItem('deal_${id}')">+</button>
          </div>`;
   }
 
-  function addBrandToCart(brand, category, emoji, special) {
-    const key = `brand_${brand.replace(/\s+/g, '_')}`;
-    if (!cart[key]) {
-      cart[key] = { id: key, name: brand, special: special || 0, qty: 1, type: "brand", emoji: emoji || "🏷️", tag: category };
-    } else {
-      cart[key].qty++;
-    }
-    updateCartUI();
-    const btn = event.currentTarget;
-    btn.style.background = "var(--green-light)";
-    btn.style.borderColor = "var(--green)";
-    btn.style.color = "var(--green-dark)";
-    setTimeout(() => {
-      btn.style.background = "";
-      btn.style.borderColor = "";
-      btn.style.color = "";
-    }, 800);
+  function refreshDealCtrl_byKey(key) {
+    if (!key.startsWith("deal_")) return;
+    const id = parseInt(key.replace("deal_",""));
+    refreshDealCtrl(id);
   }
 
   function removeCartItem(key) {
     delete cart[key];
-    renderCartDrawer();
+    refreshDealCtrl_byKey(key);
     updateCartUI();
+    renderCartDrawer();
+    reRenderSearchResults();
   }
 
+  // ─── CART UI UPDATE ───────────────────────────────────────────────────
   function updateCartUI() {
-    const items = Object.values(cart);
-    const totalQty = items.reduce((s, i) => s + i.qty, 0);
-    const totalPrice = items.reduce((s, i) => s + (i.special ? i.special * i.qty : 0), 0);
+    const { totalQty, subtotal, totalWeight, delivery } = cartTotals();
 
     document.getElementById("cartBadge").textContent = totalQty;
-    document.getElementById("fcBadge").textContent = `${totalQty} item${totalQty !== 1 ? "s" : ""}`;
-    document.getElementById("fcTotal").textContent = totalPrice.toFixed(0);
-    document.getElementById("cartTotal").textContent = totalPrice.toFixed(0);
+    document.getElementById("fcBadge").textContent   = `${totalQty} item${totalQty !== 1 ? "s" : ""}`;
+    document.getElementById("fcTotal").textContent   = subtotal.toFixed(0);
 
     const fc = document.getElementById("floatingCart");
+    const del = totalQty > 0 ? delivery : null;
+    document.getElementById("fcDelivery").textContent = del
+      ? `+ ₹${del.charge} delivery (${(totalWeight/1000).toFixed(2)} kg)`
+      : "+ ₹0 delivery";
+
     totalQty > 0 ? fc.classList.add("visible") : fc.classList.remove("visible");
   }
 
+  // ─── CART DRAWER RENDER ───────────────────────────────────────────────
   function renderCartDrawer() {
     const container = document.getElementById("cartItems");
-    const items = Object.values(cart);
+    const footer    = document.getElementById("cartFooter");
+    const items     = Object.values(cart);
+
     if (items.length === 0) {
       container.innerHTML = `
         <div class="empty-cart">
           <div class="empty-cart-icon">🛒</div>
           <p>Cart abhi empty hai!<br>Koi bhi item add karo aur<br>WhatsApp pe order karo.</p>
         </div>`;
+      footer.innerHTML = `
+        <button class="whatsapp-btn" onclick="sendWhatsApp()" style="opacity:0.5;pointer-events:none">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Cart is Empty
+        </button>`;
       return;
     }
-    container.innerHTML = items.map(item => `
+
+    container.innerHTML = items.map(item => {
+      const wg     = extractWeightGrams(item.name);
+      const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
+      const totalW = wg * item.qty;
+      const tWLabel= totalW >= 1000 ? `${(totalW/1000).toFixed(2)} kg` : `${totalW} g`;
+      return `
       <div class="cart-item">
-        <span class="cart-item-emoji">${item.emoji}</span>
+        <span class="cart-item-emoji">${item.emoji || "🏷️"}</span>
         <div class="cart-item-info">
           <div class="cart-item-name">${item.name}${item.tag ? ` <span style="color:var(--gray-text);font-weight:400;font-size:0.7rem">(${item.tag})</span>` : ""}</div>
-          <div class="cart-item-sub">
-            ${item.special ? `₹${item.special} × ${item.qty} = ₹${(item.special * item.qty).toFixed(0)}` : `Qty: ${item.qty} – Price confirm hoga WhatsApp pe`}
-          </div>
+          <div class="cart-item-sub">₹${item.special} × ${item.qty} = ₹${(item.special * item.qty).toFixed(0)}</div>
+          <div class="cart-item-weight">⚖️ ${wLabel}/unit × ${item.qty} = ${tWLabel}</div>
         </div>
-        <button class="cart-remove" onclick="removeCartItem('${item.id}')">🗑</button>
+        <div class="qty-ctrl" style="margin-right:4px">
+          <button class="qty-btn" onclick="decrementItem('${item.key}')">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="incrementItem('${item.key}')">+</button>
+        </div>
+        <button class="cart-remove" onclick="removeCartItem('${item.key}')">🗑</button>
+      </div>`;
+    }).join("");
+
+    // Footer with delivery breakdown
+    const { subtotal, totalWeight, delivery } = cartTotals();
+    const kgDisplay = (totalWeight / 1000).toFixed(2);
+    const grandTotal = subtotal + delivery.charge;
+
+    footer.innerHTML = `
+      <div class="delivery-breakdown">
+        <div class="delivery-breakdown-title">
+          🚚 Delivery Charge Breakdown
+        </div>
+        <div class="delivery-row">
+          <span class="label">Cart Items Subtotal</span>
+          <span class="value">₹${subtotal.toFixed(0)}</span>
+        </div>
+        <div class="delivery-row">
+          <span class="label">Total Cart Weight</span>
+          <span class="value">${kgDisplay} kg</span>
+        </div>
+        <div class="delivery-row">
+          <span class="label">Weight Tier <span class="delivery-tier-badge">${delivery.tier}</span></span>
+          <span class="value" style="color:#1d4ed8">${delivery.label}</span>
+        </div>
+        <div class="delivery-row">
+          <span class="label">Delivery Charge</span>
+          <span class="value" style="color:var(--orange)">₹${delivery.charge}</span>
+        </div>
+        <div class="delivery-row total-row">
+          <span style="font-weight:800">💰 Grand Total</span>
+          <span class="value">₹${grandTotal.toFixed(0)}</span>
+        </div>
       </div>
-    `).join("");
+      <button class="whatsapp-btn" onclick="sendWhatsApp()">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Order on WhatsApp – Abhi Bhejo!
+      </button>`;
   }
 
   function openCart() {
@@ -817,19 +1066,113 @@
     document.getElementById("cartDrawer").classList.remove("open");
   }
 
-  /* WHATSAPP ORDER */
-  function sendWhatsApp() {
-    const items = Object.values(cart);
-    if (items.length === 0) {
-      alert("Cart empty hai! Pehle kuch items add karo.");
+  // ─── SEARCH ───────────────────────────────────────────────────────────
+  function handleSearch(query) {
+    const q = query.trim().toLowerCase();
+    const clearBtn = document.getElementById("searchClear");
+    const resultsWrap = document.getElementById("searchResultsWrap");
+    const mainContent = document.getElementById("mainContent");
+    const catScroll   = document.getElementById("catScroll");
+
+    clearBtn.classList.toggle("visible", q.length > 0);
+
+    if (q.length === 0) {
+      resultsWrap.classList.remove("visible");
+      mainContent.style.display = "";
+      catScroll.style.display   = "";
       return;
     }
+
+    mainContent.style.display = "none";
+    catScroll.style.display   = "none";
+    resultsWrap.classList.add("visible");
+
+    const results = allItems.filter(item =>
+      item.name.toLowerCase().includes(q) ||
+      item.tag.toLowerCase().includes(q)
+    );
+
+    const titleEl = document.getElementById("searchResultTitle");
+    titleEl.innerHTML = results.length > 0
+      ? `<span class="search-highlight">${results.length} results</span> for "<strong>${query}</strong>"`
+      : ``;
+
+    const grid = document.getElementById("searchResults");
+    if (results.length === 0) {
+      grid.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-icon">🔍</div>
+          <p>Koi result nahi mila "<strong>${query}</strong>" ke liye.<br>Doosra naam try karo!</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = results.map((item, i) => {
+      const disc  = getDiscount(item.mrp, item.special);
+      const wg    = extractWeightGrams(item.name);
+      const wLabel= wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
+      const qty   = cart[item.key] ? cart[item.key].qty : 0;
+      const ctrl  = qty === 0
+        ? `<button class="add-btn" onclick="searchAdd('${item.key}')">+ ADD</button>`
+        : `<div class="qty-ctrl">
+             <button class="qty-btn" onclick="searchDec('${item.key}')">−</button>
+             <span class="qty-num">${qty}</span>
+             <button class="qty-btn" onclick="searchInc('${item.key}')">+</button>
+           </div>`;
+      return `
+        <div class="deal-card" style="animation-delay:${i * 0.05}s" id="sr_${item.key}">
+          <div class="deal-img">${item.emoji}</div>
+          <div class="deal-info">
+            <div class="deal-tag">${item.tag}</div>
+            <div class="deal-name">${item.name}</div>
+            <div class="price-row">
+              <span class="price-special">₹${item.special}</span>
+              <span class="price-mrp">MRP ₹${item.mrp}</span>
+              <span class="discount-badge">${disc}% OFF</span>
+              <span class="weight-badge">⚖️ ${wLabel}</span>
+            </div>
+          </div>
+          <div id="src_${item.key}">${ctrl}</div>
+        </div>`;
+    }).join("");
+  }
+
+  function searchAdd(key) {
+    const item = allItems.find(i => i.key === key);
+    if (!item) return;
+    if (!cart[key]) cart[key] = { ...item, qty: 1 };
+    else cart[key].qty++;
+    if (key.startsWith("deal_")) refreshDealCtrl(parseInt(key.replace("deal_","")));
+    updateCartUI();
+    reRenderSearchResults();
+  }
+  function searchInc(key) { searchAdd(key); }
+  function searchDec(key) {
+    if (cart[key]) { cart[key].qty--; if (cart[key].qty <= 0) delete cart[key]; }
+    if (key.startsWith("deal_")) refreshDealCtrl(parseInt(key.replace("deal_","")));
+    updateCartUI();
+    reRenderSearchResults();
+  }
+
+  function reRenderSearchResults() {
+    const q = document.getElementById("searchInput").value.trim().toLowerCase();
+    if (q.length > 0) handleSearch(document.getElementById("searchInput").value);
+  }
+
+  function clearSearch() {
+    document.getElementById("searchInput").value = "";
+    handleSearch("");
+  }
+
+  // ─── WHATSAPP ORDER ───────────────────────────────────────────────────
+  function sendWhatsApp() {
+    const items = Object.values(cart);
+    if (items.length === 0) { alert("Cart empty hai! Pehle kuch items add karo."); return; }
     openModal();
   }
 
   function openModal() {
     document.getElementById("customerModal").classList.add("open");
-    // Clear errors
     ["nameErr","addrErr","phoneErr"].forEach(id => document.getElementById(id).style.display = "none");
     ["custName","custAddress","custPhone"].forEach(id => document.getElementById(id).classList.remove("field-error"));
   }
@@ -842,71 +1185,49 @@
     const name    = document.getElementById("custName").value.trim();
     const address = document.getElementById("custAddress").value.trim();
     const phone   = document.getElementById("custPhone").value.trim();
-
     let valid = true;
 
-    if (!name) {
-      document.getElementById("nameErr").style.display = "block";
-      document.getElementById("custName").classList.add("field-error");
-      valid = false;
-    } else {
-      document.getElementById("nameErr").style.display = "none";
-      document.getElementById("custName").classList.remove("field-error");
-    }
-
-    if (!address) {
-      document.getElementById("addrErr").style.display = "block";
-      document.getElementById("custAddress").classList.add("field-error");
-      valid = false;
-    } else {
-      document.getElementById("addrErr").style.display = "none";
-      document.getElementById("custAddress").classList.remove("field-error");
-    }
-
-    if (!/^\d{10}$/.test(phone)) {
-      document.getElementById("phoneErr").style.display = "block";
-      document.getElementById("custPhone").classList.add("field-error");
-      valid = false;
-    } else {
-      document.getElementById("phoneErr").style.display = "none";
-      document.getElementById("custPhone").classList.remove("field-error");
-    }
+    if (!name)                  { document.getElementById("nameErr").style.display  = "block"; document.getElementById("custName").classList.add("field-error"); valid = false; }
+    else                        { document.getElementById("nameErr").style.display  = "none";  document.getElementById("custName").classList.remove("field-error"); }
+    if (!address)               { document.getElementById("addrErr").style.display  = "block"; document.getElementById("custAddress").classList.add("field-error"); valid = false; }
+    else                        { document.getElementById("addrErr").style.display  = "none";  document.getElementById("custAddress").classList.remove("field-error"); }
+    if (!/^\d{10}$/.test(phone)){ document.getElementById("phoneErr").style.display = "block"; document.getElementById("custPhone").classList.add("field-error"); valid = false; }
+    else                        { document.getElementById("phoneErr").style.display = "none";  document.getElementById("custPhone").classList.remove("field-error"); }
 
     if (!valid) return;
 
     const items = Object.values(cart);
+    const { subtotal, totalWeight, delivery } = cartTotals();
+    const grandTotal = subtotal + delivery.charge;
+    const kgDisplay  = (totalWeight / 1000).toFixed(2);
+
     let msg = "🛒 *New Order – Order Kaaro*\n";
     msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
     msg += "*👤 Customer Details:*\n";
-    msg += `• Name: ${name}\n`;
-    msg += `• Mobile: ${phone}\n`;
-    msg += `• Address: ${address}\n\n`;
+    msg += `• Name: ${name}\n• Mobile: ${phone}\n• Address: ${address}\n\n`;
     msg += "━━━━━━━━━━━━━━━━━━━━\n";
     msg += "*🛍️ Order Details:*\n\n";
-
-    let total = 0;
     items.forEach(item => {
       const lineTotal = (item.special * item.qty).toFixed(0);
-      msg += `• ${item.name}\n`;
-      msg += `  Qty: ${item.qty}  |  ₹${item.special} each  |  *₹${lineTotal}*\n\n`;
-      total += item.special * item.qty;
+      msg += `• ${item.name}\n  Qty: ${item.qty}  |  ₹${item.special} each  |  *₹${lineTotal}*\n\n`;
     });
-
     msg += "━━━━━━━━━━━━━━━━━━━━\n";
-    msg += `💰 *Total: ₹${total.toFixed(0)}*\n\n`;
-    msg += "📦 Please confirm:\n";
-    msg += "✅ Item availability\n";
-    msg += "🚚 Delivery time & charges\n";
-    msg += "💳 Payment method\n\n";
-    msg += "Thank you! 🙏";
+    msg += `🛒 Items Subtotal: ₹${subtotal.toFixed(0)}\n`;
+    msg += `⚖️ Total Weight: ${kgDisplay} kg\n`;
+    msg += `🚚 Delivery Charge: ₹${delivery.charge} (${delivery.label})\n`;
+    msg += `━━━━━━━━━━━━━━━━━━━━\n`;
+    msg += `💰 *Grand Total: ₹${grandTotal.toFixed(0)}*\n\n`;
+    msg += "📦 Please confirm:\n✅ Item availability\n🚚 Delivery time\n💳 Payment method\n\nThank you! 🙏";
 
     closeModal();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
   }
 
-  /* INIT */
+  // ─── INIT ─────────────────────────────────────────────────────────────
   renderDeals();
   renderCategories();
 </script>
 </body>
 </html>
+HTMLEOF
+echo "Done"
