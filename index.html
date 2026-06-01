@@ -1201,23 +1201,23 @@ cat > /mnt/user-data/outputs/order-kaaro.html << 'HTMLEOF'
     const grandTotal = subtotal + delivery.charge;
     const kgDisplay  = (totalWeight / 1000).toFixed(2);
 
-    let msg = "🛒 *New Order – Order Kaaro*\n";
+    let msg = " *New Order – Order Kaaro*\n";
     msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
-    msg += "*👤 Customer Details:*\n";
+    msg += "* Customer Details:*\n";
     msg += `• Name: ${name}\n• Mobile: ${phone}\n• Address: ${address}\n\n`;
     msg += "━━━━━━━━━━━━━━━━━━━━\n";
-    msg += "*🛍️ Order Details:*\n\n";
+    msg += "* Order Details:*\n\n";
     items.forEach(item => {
       const lineTotal = (item.special * item.qty).toFixed(0);
       msg += `• ${item.name}\n  Qty: ${item.qty}  |  ₹${item.special} each  |  *₹${lineTotal}*\n\n`;
     });
     msg += "━━━━━━━━━━━━━━━━━━━━\n";
-    msg += `🛒 Items Subtotal: ₹${subtotal.toFixed(0)}\n`;
-    msg += `⚖️ Total Weight: ${kgDisplay} kg\n`;
-    msg += `🚚 Delivery Charge: ₹${delivery.charge} (${delivery.label})\n`;
+    msg += ` Items Subtotal: ₹${subtotal.toFixed(0)}\n`;
+    msg += ` Total Weight: ${kgDisplay} kg\n`;
+    msg += ` Delivery Charge: ₹${delivery.charge} (${delivery.label})\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += `💰 *Grand Total: ₹${grandTotal.toFixed(0)}*\n\n`;
-    msg += "📦 Please confirm:\n✅ Item availability\n🚚 Delivery time\n💳 Payment method\n\nThank you! 🙏";
+    msg += ` *Grand Total: ₹${grandTotal.toFixed(0)}*\n\n`;
+    msg += " Please confirm:\n✅ Item availability\n Delivery time\n Payment method\n\nThank you! ";
 
     closeModal();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
