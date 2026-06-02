@@ -602,7 +602,7 @@
 </div>
 
 <script>
-  const WHATSAPP_NUMBER = "918102486293";
+  const WHATSAPP_NUMBER = "919942089120";
 
   // ─── WEIGHT EXTRACTION UTILITY ───────────────────────────────────────
   // Parses product name to extract weight in GRAMS
@@ -625,8 +625,8 @@
   function getDeliveryInfo(totalWeightGrams) {
     const kg = totalWeightGrams / 1000;
     if (kg <= 5)       return { charge: 50,  label: "Up to 5 kg",      tier: "🟢 Light" };
-    if (kg <= 11)      return { charge: 80,  label: "5 kg – 11 kg",    tier: "🟡 Medium" };
-    return               { charge: 120, label: "Above 11 kg",     tier: "🔴 Heavy" };
+    if (kg <= 11)      return { charge: 80,  label: "5 kg – 10 kg",    tier: "🟡 Medium" };
+    return               { charge: 120, label: "Above 10 kg",     tier: "🔴 Heavy" };
   }
 
   // ─── TOP DEALS DATA ───────────────────────────────────────────────────
@@ -1214,7 +1214,7 @@
     msg += ` Delivery Charge: ₹${delivery.charge} (${delivery.label})\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━\n`;
     msg += ` *Grand Total: ₹${grandTotal.toFixed(0)}*\n\n`;
-    msg += " Please confirm:\n✅ Item availability\n Delivery time\n Payment method\n\nThank you! ";
+    msg += " Please confirm:\n Item availability\n Delivery time\n Payment method\n\nThank you! ";
 
     closeModal();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
