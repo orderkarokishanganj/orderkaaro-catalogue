@@ -619,9 +619,9 @@
   // ─── DELIVERY CHARGE CALCULATION ─────────────────────────────────────
   function getDeliveryInfo(totalWeightGrams) {
     const kg = totalWeightGrams / 1000;
-    if (kg <= 5)  return { charge: 50,  label: "Up to 5 kg",    tier: "🟢 Light" };
-    if (kg <= 11) return { charge: 80,  label: "5 kg – 11 kg",  tier: "🟡 Medium" };
-    return              { charge: 120, label: "Above 11 kg",   tier: "🔴 Heavy" };
+    if (kg <= 5)  return { charge: 50,  label: "Up to 8 kg",    tier: "🟢 Light" };
+    if (kg <= 11) return { charge: 80,  label: "8 kg – 13 kg",  tier: "🟡 Medium" };
+    return              { charge: 120, label: "Above 13 kg",   tier: "🔴 Heavy" };
   }
 
   // ─── TOP DEALS (from your catalog – best-value picks) ────────────────
