@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -501,21 +501,20 @@
 <div class="search-bar-wrap">
   <div class="search-input-row">
     <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Search karo – atta, oil, soap, maggi..." oninput="handleSearch(this.value)" />
+    <input type="text" id="searchInput" placeholder="Search karo – atta, oil, soap, daal..." oninput="handleSearch(this.value)" />
     <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
   </div>
 </div>
 
 <!-- QUICK FILTER CHIPS -->
 <div class="deals-banner">
-  <div class="deal-chip active">🔥 Top Deals</div>
-  <div class="deal-chip">🛢️ Oil & Ghee</div>
-  <div class="deal-chip">🌾 Atta</div>
-  <div class="deal-chip">🥜 Dry Fruits</div>
-  <div class="deal-chip">🧺 Detergent</div>
-  <div class="deal-chip">🥤 Drinks</div>
-  <div class="deal-chip">🍫 Chocolates</div>
-  <div class="deal-chip">🧼 Soaps</div>
+  <div class="deal-chip active" onclick="scrollToTopDeals()">🔥 Top Deals</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Oil')">🛢️ Oil</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Grains')">🌾 Atta & Grains</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Pulses')">🫘 Pulses</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Detergent')">🧺 Detergent</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Soaps')">🧼 Soaps</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Personal')">🦷 Personal Care</div>
 </div>
 
 <!-- CATEGORY PILLS (auto-generated) -->
@@ -562,9 +561,7 @@
     <button class="cart-close" onclick="closeCart()">✕</button>
   </div>
   <div class="cart-items" id="cartItems"></div>
-  <div class="cart-footer" id="cartFooter">
-    <!-- dynamically rendered -->
-  </div>
+  <div class="cart-footer" id="cartFooter"></div>
 </div>
 
 <!-- CUSTOMER DETAILS MODAL -->
@@ -605,12 +602,10 @@
   const WHATSAPP_NUMBER = "919942089120";
 
   // ─── WEIGHT EXTRACTION UTILITY ───────────────────────────────────────
-  // Parses product name to extract weight in GRAMS
   function extractWeightGrams(name) {
     const n = name.toLowerCase();
-    // match patterns like: 5 kg, 5kg, 500 g, 500g, 750 ml, 750ml, 1 l, 1l, 200 ml
     const kgMatch = n.match(/(\d+(?:\.\d+)?)\s*kg/);
-    const gMatch  = n.match(/(\d+(?:\.\d+)?)\s*g(?!el|et|od|ar|reen|old|em)/); // exclude 'gel','get','god','gar','green','gold','gem'
+    const gMatch  = n.match(/(\d+(?:\.\d+)?)\s*g(?!el|et|od|ar|reen|old|em)/);
     const lMatch  = n.match(/(\d+(?:\.\d+)?)\s*l(?:\b|iter)/);
     const mlMatch = n.match(/(\d+(?:\.\d+)?)\s*ml/);
 
@@ -618,132 +613,79 @@
     if (gMatch)   return parseFloat(gMatch[1]);
     if (lMatch)   return parseFloat(lMatch[1]) * 1000;
     if (mlMatch)  return parseFloat(mlMatch[1]);
-    return 250; // default 250g if no weight found
+    return 250;
   }
 
   // ─── DELIVERY CHARGE CALCULATION ─────────────────────────────────────
   function getDeliveryInfo(totalWeightGrams) {
     const kg = totalWeightGrams / 1000;
-    if (kg <= 5)       return { charge: 50,  label: "Up to 8 kg",      tier: "🟢 Light" };
-    if (kg <= 11)      return { charge: 80,  label: "8 kg – 13 kg",    tier: "🟡 Medium" };
-    return               { charge: 120, label: "Above 13 kg",     tier: "🔴 Heavy" };
+    if (kg <= 5)  return { charge: 50,  label: "Up to 5 kg",    tier: "🟢 Light" };
+    if (kg <= 11) return { charge: 80,  label: "5 kg – 11 kg",  tier: "🟡 Medium" };
+    return              { charge: 120, label: "Above 11 kg",   tier: "🔴 Heavy" };
   }
 
-  // ─── TOP DEALS DATA ───────────────────────────────────────────────────
+  // ─── TOP DEALS (from your catalog – best-value picks) ────────────────
   const topDeals = [
-    { id: 1, tag: "Atta & Flours", name: "Aashirvaad Shudh Chakki Atta 5 kg", hinglish: "Aashirvaad Atta 5 kg – Ghar ki roti ke liye best!", mrp: 283, special: 240, emoji: "🌾" },
-    { id: 2, tag: "Oil & Ghee", name: "Fortune Refined Soyabean Oil 750 ml Pouch", hinglish: "Fortune Soyabean Oil – Khana pakao healthy tarike se", mrp: 160, special: 155, emoji: "🛢️" },
-    { id: 3, tag: "Oil & Ghee", name: "Kings Refined Soyabean Oil 750 g", hinglish: "Kings Soyabean Oil – Value for money, daily cooking ke liye", mrp: 140, special: 135, emoji: "🫙" },
-    { id: 4, tag: "Dry Fruits & Nuts", name: "Wonderland Foods Premium Health Crunch Almonds 500 g", hinglish: "Wonderland Badam 500g – Sehat ke liye best deal!", mrp: 799, special: 405, emoji: "🥜" },
-    { id: 5, tag: "Dry Fruits & Nuts", name: "Wonderland Foods Cashews 200 g", hinglish: "Wonderland Kaju 200g – Snacking ke liye perfect", mrp: 389, special: 160, emoji: "🌰" },
-    { id: 6, tag: "Dry Fruits & Nuts", name: "Wonderland Foods Raw Cashews 500 g", hinglish: "Wonderland Raw Kaju 500g – Ghar pe bhuno ya khaana mein daalo", mrp: 770, special: 399, emoji: "🌰" },
+    { id: 1,  tag: "Grains",        name: "Ashirwad Aatta 5 kg",          emoji: "🌾", mrp: 283, special: 240 },
+    { id: 2,  tag: "Oil",           name: "Independence Oil 1 L",          emoji: "🛢️", mrp: 185, special: 170 },
+    { id: 3,  tag: "Oil",           name: "Sadabahar Oil 1 L",             emoji: "🫙", mrp: 190, special: 175 },
+    { id: 4,  tag: "Oil",           name: "Fortune Refine Oil 750 ml",     emoji: "🍳", mrp: 170, special: 155 },
+    { id: 5,  tag: "Oil",           name: "Kings Refine Oil 750 ml",       emoji: "👑", mrp: 150, special: 135 },
+    { id: 6,  tag: "Pulses",        name: "Mashoor Daal 1 kg",             emoji: "🫘", mrp: 115, special: 100 },
   ];
 
-  // ─── CATEGORIES DATA ──────────────────────────────────────────────────
+  // ─── CATEGORIES DATA (your full catalog) ─────────────────────────────
   const categories = [
-    { name: "Soft Drinks", sub: "Thanda peeyo, fresh raho!", emoji: "🥤", brands: [
-      { name: "Sprite 750ml", emoji: "🟢", mrp: 40, special: 35 },
-      { name: "Thums Up 750ml", emoji: "⚫", mrp: 42, special: 36 },
-      { name: "Coca Cola 750ml", emoji: "🔴", mrp: 42, special: 36 },
-      { name: "Limca 750ml", emoji: "🟡", mrp: 40, special: 34 },
-      { name: "Campa Cola 750ml", emoji: "🧃", mrp: 30, special: 30 },
-    ]},
-    { name: "Energy Drinks", sub: "Instant energy boost karo", emoji: "⚡", brands: [
-      { name: "Red Bull 250ml", emoji: "🐂", mrp: 125, special: 110 },
-      { name: "Monster 500ml", emoji: "🟢", mrp: 135, special: 118 },
-      { name: "Campa Energy 250ml", emoji: "⚡", mrp: 50, special: 42 },
-    ]},
-    { name: "Juices & Drinks", sub: "Natural & tasty drinks", emoji: "🧃", brands: [
-      { name: "Maaza Mango 600ml", emoji: "🥭", mrp: 55, special: 46 },
-    ]},
-    { name: "Oil & Ghee", sub: "Khana pakao sahi tel se", emoji: "🛢️", brands: [
-      { name: "Independence Soya Oil 1L", emoji: "🛢️", mrp: 160, special: 138 },
-      { name: "Fortune Sunflower Oil 1L", emoji: "🍳", mrp: 170, special: 148 },
-      { name: "Kings Soya Oil 1L", emoji: "👑", mrp: 155, special: 132 },
-    ]},
-    { name: "Atta & Flours", sub: "Ghar ki soft roti ke liye", emoji: "🌾", brands: [
-      { name: "Aashirvaad Atta 5kg", emoji: "🌾", mrp: 283, special: 220 },
-    ]},
-    { name: "Detergents & Fabric Care", sub: "Kapde saaf, chamakdar!", emoji: "🧺", brands: [
-      { name: "Surf Excel Easy Wash 1kg", emoji: "🧺", mrp: 220, special: 185 },
-      { name: "Rin Detergent Powder 1kg", emoji: "💧", mrp: 115, special: 96 },
-      { name: "Easy Wash Powder 1kg", emoji: "✨", mrp: 95, special: 78 },
-    ]},
-    { name: "Dry Fruits & Nuts", sub: "Healthy snacking, daily nutrition", emoji: "🥜", brands: [
-      { name: "Wonderland Almonds 500g", emoji: "🥜", mrp: 799, special: 405 },
-    ]},
-    { name: "Noodles & Pasta", sub: "2-minute mein ready!", emoji: "🍜", brands: [
-      { name: "Maggi Noodles 70g ×4", emoji: "🍜", mrp: 60, special: 52 },
-      { name: "Sil Pasta 400g", emoji: "🍝", mrp: 85, special: 72 },
-    ]},
-    { name: "Soaps, Face & Handwash", sub: "Saaf raho, healthy raho", emoji: "🧼", brands: [
-      { name: "Pears Soap 75g", emoji: "🫧", mrp: 55, special: 46 },
-      { name: "Lifebuoy Soap 100g", emoji: "🛡️", mrp: 42, special: 34 },
-      { name: "Lux Soap 100g", emoji: "🌸", mrp: 48, special: 39 },
-      { name: "Godrej No.1 Soap 100g", emoji: "🧼", mrp: 38, special: 30 },
-      { name: "Velvet Soap 100g", emoji: "💜", mrp: 45, special: 36 },
-      { name: "Get Real Handwash 200ml", emoji: "🌿", mrp: 95, special: 79 },
-    ]},
-    { name: "Hair Oil, Shampoo & Gel", sub: "Baal strong, shining rakho", emoji: "💆", brands: [
-      { name: "Dabur Amla Hair Oil 200ml", emoji: "🌿", mrp: 130, special: 108 },
-      { name: "Bajaj Almond Hair Oil 200ml", emoji: "💆", mrp: 120, special: 99 },
-      { name: "Get Real Shampoo 200ml", emoji: "🌱", mrp: 110, special: 89 },
-      { name: "Velvet Shampoo 200ml", emoji: "💜", mrp: 115, special: 92 },
-      { name: "Nihar Naturals Oil 200ml", emoji: "🌺", mrp: 105, special: 85 },
-    ]},
-    { name: "Chocolates & Candies", sub: "Meetha khaao, khush raho!", emoji: "🍫", brands: [
-      { name: "Toffyman Toffee ×20", emoji: "🍬", mrp: 20, special: 16 },
-      { name: "Lotus On & On ×10", emoji: "🍭", mrp: 50, special: 42 },
-      { name: "Ravalgaon Candy ×20", emoji: "🍡", mrp: 25, special: 19 },
-      { name: "KitKat 4F 37g", emoji: "🍫", mrp: 50, special: 43 },
-      { name: "Munch 26g", emoji: "🍪", mrp: 20, special: 17 },
-    ]},
-    { name: "Salt & Sugar", sub: "Kitchen essentials, daily zaroorat", emoji: "🧂", brands: [
-      { name: "Tata Salt 1kg", emoji: "🧂", mrp: 28, special: 24 },
-      { name: "Dhampur Sugar 1kg", emoji: "🍚", mrp: 55, special: 46 },
-    ]},
-    { name: "Dairy Products", sub: "Fresh & nutritious dairy", emoji: "🥛", brands: [
-      { name: "Amul Butter 500g", emoji: "🥛", mrp: 280, special: 238 },
-      { name: "Nestle Milkmaid 400g", emoji: "🧀", mrp: 155, special: 130 },
-    ]},
-    { name: "Oral Care", sub: "Healthy teeth, fresh breath!", emoji: "🦷", brands: [
-      { name: "Colgate Strong Teeth 200g", emoji: "🦷", mrp: 120, special: 98 },
-      { name: "Dabur Red Paste 200g", emoji: "🌿", mrp: 115, special: 92 },
-      { name: "Sensodyne 70g", emoji: "❄️", mrp: 175, special: 148 },
-    ]},
-    { name: "Dishwash", sub: "Bartan chamkao jaldi se", emoji: "🍽️", brands: [
-      { name: "Vim Dishwash Bar 500g", emoji: "🟡", mrp: 75, special: 62 },
-    ]},
-    { name: "Water & Soda", sub: "Pure aur refreshing", emoji: "💧", brands: [
-      { name: "Kinley Water 1L", emoji: "💧", mrp: 20, special: 16 },
-    ]},
-    { name: "Nutrition Drinks", sub: "Strong bano, healthy raho", emoji: "🏃", brands: [
-      { name: "Horlicks Classic 500g", emoji: "🥤", mrp: 375, special: 310 },
-    ]},
-    { name: "Jams, Sauces & Spreads", sub: "Breakfast aur snacks ke liye", emoji: "🍯", brands: [
-      { name: "Sil Mixed Fruit Jam 500g", emoji: "🫙", mrp: 165, special: 138 },
-      { name: "Dabur Homemade Tomato Ketchup 500g", emoji: "🍯", mrp: 130, special: 108 },
-      { name: "Kissan Mixed Fruit Jam 500g", emoji: "🍓", mrp: 175, special: 145 },
-    ]},
-    { name: "Dals & Pulses", sub: "Protein-rich, dal roz khaao", emoji: "🫘", brands: [
-      { name: "Ruchi Gold Toor Dal 1kg", emoji: "🫘", mrp: 160, special: 135 },
-      { name: "Veer Chana Dal 1kg", emoji: "💛", mrp: 120, special: 99 },
-      { name: "Surajmukhi Moong Dal 1kg", emoji: "🌻", mrp: 135, special: 112 },
-    ]},
-    { name: "Floor Cleaners & Disinfectants", sub: "Ghar ko saaf aur germ-free rakho", emoji: "🧹", brands: [
-      { name: "Harpic Power Plus 1L", emoji: "🧹", mrp: 165, special: 138 },
-    ]},
-    { name: "Ready To Cook & Eat", sub: "Jaldi khana, no tension!", emoji: "🍲", brands: [
-      { name: "Knorr Soupy Noodles 70g", emoji: "🍲", mrp: 35, special: 28 },
-    ]},
-    { name: "Biscuits, Cakes & Cookies", sub: "Tea time ka best saathi!", emoji: "🍪", brands: [
-      { name: "Parle-G 250g", emoji: "🍪", mrp: 30, special: 25 },
-      { name: "Britannia Marigold 250g", emoji: "🌼", mrp: 45, special: 38 },
-      { name: "Good Day Butter 250g", emoji: "☀️", mrp: 55, special: 46 },
-      { name: "Britannia 50-50 200g", emoji: "🍰", mrp: 40, special: 33 },
-      { name: "Bisk Farm Snacky 200g", emoji: "🫓", mrp: 38, special: 31 },
-      { name: "Sunfeast Dark Fantasy 150g", emoji: "🌟", mrp: 65, special: 54 },
-    ]},
+    {
+      name: "Grains & Atta", sub: "Ghar ki roti ke liye best!", emoji: "🌾",
+      brands: [
+        { name: "Ashirwad Aatta 5 kg",    emoji: "🌾", mrp: 283, special: 240 },
+        { name: "Ganesh Aata 1 kg",        emoji: "🌿", mrp: 55,  special: 48  },
+        { name: "Kala Chana 1 kg",         emoji: "🟤", mrp: 90,  special: 80  },
+        { name: "Chura / Poha 1 kg",       emoji: "🍚", mrp: 48,  special: 40  },
+        { name: "Muri 110 g",              emoji: "🌾", mrp: 12,  special: 10  },
+        { name: "Muri 300 g",              emoji: "🌾", mrp: 30,  special: 25  },
+        { name: "Anoop Sattu 200 g",       emoji: "💪", mrp: 42,  special: 35  },
+      ]
+    },
+    {
+      name: "Oil", sub: "Khana pakao sahi tel se", emoji: "🛢️",
+      brands: [
+        { name: "Independence Oil 1 L",      emoji: "🛢️", mrp: 185, special: 170 },
+        { name: "Sadabahar Oil 1 L",         emoji: "🫙", mrp: 190, special: 175 },
+        { name: "Fortune Refine Oil 750 ml", emoji: "🍳", mrp: 170, special: 155 },
+        { name: "Kings Refine Oil 750 ml",   emoji: "👑", mrp: 150, special: 135 },
+      ]
+    },
+    {
+      name: "Pulses & Dal", sub: "Protein-rich, dal roz khaao", emoji: "🫘",
+      brands: [
+        { name: "Mashoor Daal 1 kg",  emoji: "🫘", mrp: 115, special: 100 },
+        { name: "Chana Daal 1 kg",    emoji: "💛", mrp: 115, special: 100 },
+      ]
+    },
+    {
+      name: "Detergents", sub: "Kapde saaf, chamakdar!", emoji: "🧺",
+      brands: [
+        { name: "Surf Excel Detergent 500 g", emoji: "🧺", mrp: 82,  special: 71  },
+        { name: "Wheel Detergent 500 g",      emoji: "💧", mrp: 50,  special: 41  },
+        { name: "Ghadi Detergent 100 g",      emoji: "✨", mrp: 12,  special: 10  },
+      ]
+    },
+    {
+      name: "Soaps", sub: "Saaf raho, healthy raho", emoji: "🧼",
+      brands: [
+        { name: "Lux Soap 1 pcs",        emoji: "🌸", mrp: 45,  special: 38  },
+        { name: "Pears Soap 1 pcs",       emoji: "🫧", mrp: 25,  special: 20  },
+        { name: "Surf Excel Soap 1 pcs",  emoji: "🧼", mrp: 45,  special: 38  },
+      ]
+    },
+    {
+      name: "Personal Care", sub: "Healthy raho, fresh raho!", emoji: "🦷",
+      brands: [
+        { name: "Dant Kanti 200 g", emoji: "🦷", mrp: 120, special: 106 },
+      ]
+    },
   ];
 
   // ─── BUILD ALL-ITEMS FLAT LIST FOR SEARCH ────────────────────────────
@@ -754,7 +696,10 @@
   categories.forEach(cat => {
     cat.brands.forEach(b => {
       const key = `brand_${b.name.replace(/\s+/g, '_')}`;
-      allItems.push({ key, name: b.name, tag: cat.name, emoji: b.emoji, mrp: b.mrp, special: b.special, type: "brand" });
+      // avoid duplicating items already in topDeals
+      if (!allItems.find(i => i.name === b.name)) {
+        allItems.push({ key, name: b.name, tag: cat.name, emoji: b.emoji, mrp: b.mrp, special: b.special, type: "brand" });
+      }
     });
   });
 
@@ -770,44 +715,8 @@
     const totalQty    = items.reduce((s, i) => s + i.qty, 0);
     const subtotal    = items.reduce((s, i) => s + (i.special * i.qty), 0);
     const totalWeight = items.reduce((s, i) => s + (extractWeightGrams(i.name) * i.qty), 0);
-    const delivery    = items.length === 0 ? 0 : getDeliveryInfo(totalWeight);
+    const delivery    = items.length === 0 ? { charge: 0, label: "", tier: "" } : getDeliveryInfo(totalWeight);
     return { totalQty, subtotal, totalWeight, delivery };
-  }
-
-  // ─── RENDER HELPERS ───────────────────────────────────────────────────
-  function cardHTML(item, ctrlId) {
-    const disc = getDiscount(item.mrp, item.special);
-    const wg   = extractWeightGrams(item.name);
-    const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
-    return `
-      <div class="deal-card">
-        <div class="deal-img">${item.emoji}</div>
-        <div class="deal-info">
-          <div class="deal-tag">${item.tag}</div>
-          <div class="deal-name">${item.name}</div>
-          <div class="price-row">
-            <span class="price-special">₹${item.special}</span>
-            <span class="price-mrp">MRP ₹${item.mrp}</span>
-            <span class="discount-badge">${disc}% OFF</span>
-            <span class="weight-badge">⚖️ ${wLabel}</span>
-          </div>
-        </div>
-        <div id="${ctrlId}">
-          ${addBtnHTML(item.key || `deal_${item.dealId}`, item)}
-        </div>
-      </div>`;
-  }
-
-  function addBtnHTML(key, item) {
-    const qty = cart[key] ? cart[key].qty : 0;
-    if (qty === 0) {
-      return `<button class="add-btn" onclick="addItemToCart('${key}',${JSON.stringify(item).replace(/'/g,"&#39;")})">+ ADD</button>`;
-    }
-    return `<div class="qty-ctrl">
-      <button class="qty-btn" onclick="decrementItem('${key}')">−</button>
-      <span class="qty-num">${qty}</span>
-      <button class="qty-btn" onclick="incrementItem('${key}')">+</button>
-    </div>`;
   }
 
   // ─── RENDER TOP DEALS ─────────────────────────────────────────────────
@@ -891,7 +800,6 @@
     if (!cart[key]) cart[key] = { key, name, tag: category, emoji, special, mrp, qty: 1 };
     else cart[key].qty++;
     updateCartUI();
-    // Flash the button
     const btns = document.querySelectorAll(".brand-btn");
     btns.forEach(btn => {
       if (btn.querySelector(".brand-name-text") && btn.querySelector(".brand-name-text").textContent === name) {
@@ -965,9 +873,8 @@
     document.getElementById("fcTotal").textContent   = subtotal.toFixed(0);
 
     const fc = document.getElementById("floatingCart");
-    const del = totalQty > 0 ? delivery : null;
-    document.getElementById("fcDelivery").textContent = del
-      ? `+ ₹${del.charge} delivery (${(totalWeight/1000).toFixed(2)} kg)`
+    document.getElementById("fcDelivery").textContent = totalQty > 0
+      ? `+ ₹${delivery.charge} delivery (${(totalWeight/1000).toFixed(2)} kg)`
       : "+ ₹0 delivery";
 
     totalQty > 0 ? fc.classList.add("visible") : fc.classList.remove("visible");
@@ -986,7 +893,7 @@
           <p>Cart abhi empty hai!<br>Koi bhi item add karo aur<br>WhatsApp pe order karo.</p>
         </div>`;
       footer.innerHTML = `
-        <button class="whatsapp-btn" onclick="sendWhatsApp()" style="opacity:0.5;pointer-events:none">
+        <button class="whatsapp-btn" style="opacity:0.5;pointer-events:none">
           <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Cart is Empty
         </button>`;
@@ -1015,16 +922,13 @@
       </div>`;
     }).join("");
 
-    // Footer with delivery breakdown
     const { subtotal, totalWeight, delivery } = cartTotals();
-    const kgDisplay = (totalWeight / 1000).toFixed(2);
+    const kgDisplay  = (totalWeight / 1000).toFixed(2);
     const grandTotal = subtotal + delivery.charge;
 
     footer.innerHTML = `
       <div class="delivery-breakdown">
-        <div class="delivery-breakdown-title">
-          🚚 Delivery Charge Breakdown
-        </div>
+        <div class="delivery-breakdown-title">🚚 Delivery Charge Breakdown</div>
         <div class="delivery-row">
           <span class="label">Cart Items Subtotal</span>
           <span class="value">₹${subtotal.toFixed(0)}</span>
@@ -1066,7 +970,7 @@
   // ─── SEARCH ───────────────────────────────────────────────────────────
   function handleSearch(query) {
     const q = query.trim().toLowerCase();
-    const clearBtn = document.getElementById("searchClear");
+    const clearBtn    = document.getElementById("searchClear");
     const resultsWrap = document.getElementById("searchResultsWrap");
     const mainContent = document.getElementById("mainContent");
     const catScroll   = document.getElementById("catScroll");
@@ -1184,12 +1088,12 @@
     const phone   = document.getElementById("custPhone").value.trim();
     let valid = true;
 
-    if (!name)                  { document.getElementById("nameErr").style.display  = "block"; document.getElementById("custName").classList.add("field-error"); valid = false; }
-    else                        { document.getElementById("nameErr").style.display  = "none";  document.getElementById("custName").classList.remove("field-error"); }
-    if (!address)               { document.getElementById("addrErr").style.display  = "block"; document.getElementById("custAddress").classList.add("field-error"); valid = false; }
-    else                        { document.getElementById("addrErr").style.display  = "none";  document.getElementById("custAddress").classList.remove("field-error"); }
-    if (!/^\d{10}$/.test(phone)){ document.getElementById("phoneErr").style.display = "block"; document.getElementById("custPhone").classList.add("field-error"); valid = false; }
-    else                        { document.getElementById("phoneErr").style.display = "none";  document.getElementById("custPhone").classList.remove("field-error"); }
+    if (!name)                   { document.getElementById("nameErr").style.display  = "block"; document.getElementById("custName").classList.add("field-error"); valid = false; }
+    else                         { document.getElementById("nameErr").style.display  = "none";  document.getElementById("custName").classList.remove("field-error"); }
+    if (!address)                { document.getElementById("addrErr").style.display  = "block"; document.getElementById("custAddress").classList.add("field-error"); valid = false; }
+    else                         { document.getElementById("addrErr").style.display  = "none";  document.getElementById("custAddress").classList.remove("field-error"); }
+    if (!/^\d{10}$/.test(phone)) { document.getElementById("phoneErr").style.display = "block"; document.getElementById("custPhone").classList.add("field-error"); valid = false; }
+    else                         { document.getElementById("phoneErr").style.display = "none";  document.getElementById("custPhone").classList.remove("field-error"); }
 
     if (!valid) return;
 
@@ -1198,26 +1102,45 @@
     const grandTotal = subtotal + delivery.charge;
     const kgDisplay  = (totalWeight / 1000).toFixed(2);
 
-    let msg = " *New Order – Order Kaaro*\n";
+    let msg = "🛒 *New Order – Order Kaaro*\n";
     msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
-    msg += "* Customer Details:*\n";
+    msg += "*👤 Customer Details:*\n";
     msg += `• Name: ${name}\n• Mobile: ${phone}\n• Address: ${address}\n\n`;
     msg += "━━━━━━━━━━━━━━━━━━━━\n";
-    msg += "* Order Details:*\n\n";
+    msg += "*🛍️ Order Details:*\n\n";
     items.forEach(item => {
       const lineTotal = (item.special * item.qty).toFixed(0);
       msg += `• ${item.name}\n  Qty: ${item.qty}  |  ₹${item.special} each  |  *₹${lineTotal}*\n\n`;
     });
     msg += "━━━━━━━━━━━━━━━━━━━━\n";
-    msg += ` Items Subtotal: ₹${subtotal.toFixed(0)}\n`;
-    msg += ` Total Weight: ${kgDisplay} kg\n`;
-    msg += ` Delivery Charge: ₹${delivery.charge} (${delivery.label})\n`;
+    msg += `🧾 Items Subtotal: ₹${subtotal.toFixed(0)}\n`;
+    msg += `⚖️ Total Weight: ${kgDisplay} kg\n`;
+    msg += `🚚 Delivery Charge: ₹${delivery.charge} (${delivery.label})\n`;
     msg += `━━━━━━━━━━━━━━━━━━━━\n`;
-    msg += ` *Grand Total: ₹${grandTotal.toFixed(0)}*\n\n`;
-    msg += " Please confirm:\n Item availability\n Delivery time\n Payment method\n\nThank you! ";
+    msg += `💰 *Grand Total: ₹${grandTotal.toFixed(0)}*\n\n`;
+    msg += "✅ Please confirm:\n• Item availability\n• Delivery time\n• Payment method\n\nThank you! 🙏";
 
     closeModal();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
+  }
+
+  // ─── CHIP SCROLL FUNCTIONS ────────────────────────────────────────────
+  function scrollToTopDeals() {
+    setActiveChip(0);
+    document.getElementById("dealsGrid").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function scrollToCatByName(keyword) {
+    const idx = categories.findIndex(c => c.name.toLowerCase().includes(keyword.toLowerCase()));
+    if (idx === -1) return;
+    setActiveChip(idx + 1); // +1 because index 0 is "Top Deals"
+    const el = document.getElementById(`cat_${idx}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function setActiveChip(activeIndex) {
+    const chips = document.querySelectorAll(".deal-chip");
+    chips.forEach((chip, i) => chip.classList.toggle("active", i === activeIndex));
   }
 
   // ─── INIT ─────────────────────────────────────────────────────────────
@@ -1226,5 +1149,3 @@
 </script>
 </body>
 </html>
-HTMLEOF
-echo "Done"
