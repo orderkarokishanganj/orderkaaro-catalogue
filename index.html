@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -509,12 +509,17 @@
 <!-- QUICK FILTER CHIPS -->
 <div class="deals-banner">
   <div class="deal-chip active" onclick="scrollToTopDeals()">🔥 Top Deals</div>
-  <div class="deal-chip" onclick="scrollToCatByName('Oil')">🛢️ Oil</div>
   <div class="deal-chip" onclick="scrollToCatByName('Grains')">🌾 Atta & Grains</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Oil')">🛢️ Oil</div>
   <div class="deal-chip" onclick="scrollToCatByName('Pulses')">🫘 Pulses</div>
   <div class="deal-chip" onclick="scrollToCatByName('Detergent')">🧺 Detergent</div>
-  <div class="deal-chip" onclick="scrollToCatByName('Soaps')">🧼 Soaps</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Soap')">🧼 Soaps</div>
   <div class="deal-chip" onclick="scrollToCatByName('Personal')">🦷 Personal Care</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Biscuits')">🍪 Biscuits</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Masala')">🌶️ Masala</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Disinfect')">🧴 Disinfectant</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Chocolate')">🍫 Chocolate</div>
+  <div class="deal-chip" onclick="scrollToCatByName('Honey')">🍯 Honey</div>
 </div>
 
 <!-- CATEGORY PILLS (auto-generated) -->
@@ -602,103 +607,257 @@
   const WHATSAPP_NUMBER = "919942089120";
 
   // ─── WEIGHT EXTRACTION UTILITY ───────────────────────────────────────
-  function extractWeightGrams(name) {
-    const n = name.toLowerCase();
+  function extractWeightGrams(unit) {
+    const n = (unit || "").toLowerCase();
     const kgMatch = n.match(/(\d+(?:\.\d+)?)\s*kg/);
     const gMatch  = n.match(/(\d+(?:\.\d+)?)\s*g(?!el|et|od|ar|reen|old|em)/);
     const lMatch  = n.match(/(\d+(?:\.\d+)?)\s*l(?:\b|iter)/);
     const mlMatch = n.match(/(\d+(?:\.\d+)?)\s*ml/);
-
     if (kgMatch)  return parseFloat(kgMatch[1]) * 1000;
-    if (gMatch)   return parseFloat(gMatch[1]);
     if (lMatch)   return parseFloat(lMatch[1]) * 1000;
     if (mlMatch)  return parseFloat(mlMatch[1]);
-    return 250;
+    if (gMatch)   return parseFloat(gMatch[1]);
+    return 200; // default for 1 pcs items
   }
 
   // ─── DELIVERY CHARGE CALCULATION ─────────────────────────────────────
   function getDeliveryInfo(totalWeightGrams) {
     const kg = totalWeightGrams / 1000;
-    if (kg <= 5)  return { charge: 50,  label: "Up to 8 kg",    tier: "🟢 Light" };
-    if (kg <= 11) return { charge: 80,  label: "8 kg – 13 kg",  tier: "🟡 Medium" };
-    return              { charge: 120, label: "Above 13 kg",   tier: "🔴 Heavy" };
+    if (kg <= 5)  return { charge: 50,  label: "Up to 8 kg",   tier: "🟢 Light" };
+    if (kg <= 11) return { charge: 80,  label: "8 kg – 13 kg", tier: "🟡 Medium" };
+    return              { charge: 120, label: "Above 13 kg",  tier: "🔴 Heavy" };
   }
 
-  // ─── TOP DEALS (from your catalog – best-value picks) ────────────────
-  const topDeals = [
-    { id: 1,  tag: "Grains",        name: "Ashirwad Aatta 5 kg",          emoji: "🌾", mrp: 283, special: 240 },
-    { id: 2,  tag: "Oil",           name: "Independence Oil 1 L",          emoji: "🛢️", mrp: 185, special: 170 },
-    { id: 3,  tag: "Oil",           name: "Sadabahar Oil 1 L",             emoji: "🫙", mrp: 190, special: 175 },
-    { id: 4,  tag: "Oil",           name: "Fortune Refine Oil 750 ml",     emoji: "🍳", mrp: 170, special: 155 },
-    { id: 5,  tag: "Oil",           name: "Kings Refine Oil 750 ml",       emoji: "👑", mrp: 150, special: 135 },
-    { id: 6,  tag: "Pulses",        name: "Mashoor Daal 1 kg",             emoji: "🫘", mrp: 115, special: 100 },
-  ];
-
-  // ─── CATEGORIES DATA (your full catalog) ─────────────────────────────
+  // ─── FULL PRODUCT CATALOG (P001–P108) ────────────────────────────────
+  // special = your sale price from catalog; mrp = ~15-20% above special
   const categories = [
     {
       name: "Grains & Atta", sub: "Ghar ki roti ke liye best!", emoji: "🌾",
       brands: [
-        { name: "Ashirwad Aatta 5 kg",    emoji: "🌾", mrp: 283, special: 240 },
-        { name: "Ganesh Aata 1 kg",        emoji: "🌿", mrp: 55,  special: 48  },
-        { name: "Kala Chana 1 kg",         emoji: "🟤", mrp: 90,  special: 80  },
-        { name: "Chura / Poha 1 kg",       emoji: "🍚", mrp: 48,  special: 40  },
-        { name: "Muri 110 g",              emoji: "🌾", mrp: 12,  special: 10  },
-        { name: "Muri 300 g",              emoji: "🌾", mrp: 30,  special: 25  },
-        { name: "Anoop Sattu 200 g",       emoji: "💪", mrp: 42,  special: 35  },
+        { id:"P001", name:"Ashirwad Aatta",    unit:"5 kg",   emoji:"🌾", special:240, mrp:283 },
+        { id:"P016", name:"Ganesh Aata",        unit:"1 kg",   emoji:"🌿", special:48,  mrp:58  },
+        { id:"P007", name:"Kala Chana",         unit:"1 kg",   emoji:"🟤", special:80,  mrp:95  },
+        { id:"P009", name:"Chura / Poha",       unit:"1 kg",   emoji:"🍚", special:40,  mrp:48  },
+        { id:"P010", name:"Muri",               unit:"110 g",  emoji:"🌾", special:10,  mrp:12  },
+        { id:"P011", name:"Muri",               unit:"300 g",  emoji:"🌾", special:25,  mrp:30  },
+        { id:"P012", name:"Anoop Sattu",        unit:"200 g",  emoji:"💪", special:35,  mrp:42  },
       ]
     },
     {
       name: "Oil", sub: "Khana pakao sahi tel se", emoji: "🛢️",
       brands: [
-        { name: "Independence Oil 1 L",      emoji: "🛢️", mrp: 185, special: 170 },
-        { name: "Sadabahar Oil 1 L",         emoji: "🫙", mrp: 190, special: 175 },
-        { name: "Fortune Refine Oil 750 ml", emoji: "🍳", mrp: 170, special: 155 },
-        { name: "Kings Refine Oil 750 ml",   emoji: "👑", mrp: 150, special: 135 },
+        { id:"P002", name:"Independence Oil",      unit:"1 L",    emoji:"🛢️", special:170, mrp:195 },
+        { id:"P003", name:"Sadabahar Oil",         unit:"1 L",    emoji:"🫙", special:175, mrp:200 },
+        { id:"P004", name:"Fortune Refine Oil",    unit:"750 ml", emoji:"🍳", special:155, mrp:178 },
+        { id:"P005", name:"Kings Refine Oil",      unit:"750 ml", emoji:"👑", special:135, mrp:155 },
       ]
     },
     {
       name: "Pulses & Dal", sub: "Protein-rich, dal roz khaao", emoji: "🫘",
       brands: [
-        { name: "Mashoor Daal 1 kg",  emoji: "🫘", mrp: 115, special: 100 },
-        { name: "Chana Daal 1 kg",    emoji: "💛", mrp: 115, special: 100 },
+        { id:"P006", name:"Mashoor Daal",  unit:"1 kg", emoji:"🫘", special:100, mrp:118 },
+        { id:"P008", name:"Chana Daal",    unit:"1 kg", emoji:"💛", special:100, mrp:118 },
       ]
     },
     {
       name: "Detergents", sub: "Kapde saaf, chamakdar!", emoji: "🧺",
       brands: [
-        { name: "Surf Excel Detergent 500 g", emoji: "🧺", mrp: 82,  special: 71  },
-        { name: "Wheel Detergent 500 g",      emoji: "💧", mrp: 50,  special: 41  },
-        { name: "Ghadi Detergent 100 g",      emoji: "✨", mrp: 12,  special: 10  },
+        { id:"P013", name:"Surf Excel Detergent", unit:"500 g", emoji:"🧺", special:71, mrp:85  },
+        { id:"P014", name:"Wheel Detergent",      unit:"500 g", emoji:"💧", special:41, mrp:50  },
+        { id:"P015", name:"Ghadi Detergent",      unit:"100 g", emoji:"✨", special:10, mrp:12  },
       ]
     },
     {
       name: "Soaps", sub: "Saaf raho, healthy raho", emoji: "🧼",
       brands: [
-        { name: "Lux Soap 1 pcs",        emoji: "🌸", mrp: 45,  special: 38  },
-        { name: "Pears Soap 1 pcs",       emoji: "🫧", mrp: 25,  special: 20  },
-        { name: "Surf Excel Soap 1 pcs",  emoji: "🧼", mrp: 45,  special: 38  },
+        { id:"P017", name:"Lux Soap",       unit:"1 pcs", emoji:"🌸", special:38, mrp:46 },
+        { id:"P018", name:"Pears Soap",     unit:"1 pcs", emoji:"🫧", special:20, mrp:25 },
+        { id:"P019", name:"Surf Excel Soap",unit:"1 pcs", emoji:"🧼", special:38, mrp:46 },
       ]
     },
     {
       name: "Personal Care", sub: "Healthy raho, fresh raho!", emoji: "🦷",
       brands: [
-        { name: "Dant Kanti 200 g", emoji: "🦷", mrp: 120, special: 106 },
+        { id:"P020", name:"Dant Kanti",                              unit:"200 g",  emoji:"🦷", special:106, mrp:125 },
+        { id:"P021", name:"Pro-ease Go XL",                          unit:"1 pcs",  emoji:"🪥", special:38,  mrp:45  },
+        { id:"P045", name:"Dettol",                                  unit:"1 pcs",  emoji:"🧴", special:40,  mrp:48  },
+        { id:"P046", name:"Nihar Naturals Adv. Coconut Hair Oil",    unit:"1 pcs",  emoji:"🥥", special:50,  mrp:60  },
+        { id:"P047", name:"Nihar Naturals Coconut Oil Methi Jasmine",unit:"200 ml", emoji:"🌸", special:88,  mrp:105 },
+        { id:"P048", name:"Nihar Naturals Adv. Coconut Oil +20%",   unit:"1 pcs",  emoji:"🥥", special:80,  mrp:95  },
+        { id:"P049", name:"Dabur Lal Dantmanjan",                    unit:"1 pcs",  emoji:"🦷", special:38,  mrp:45  },
+        { id:"P051", name:"Nihar Naturals Uttam Pure Coconut Oil",   unit:"192 ml", emoji:"🥥", special:95,  mrp:112 },
+        { id:"P052", name:"Emami Kesh King Ayurvedic Oil",           unit:"50 ml",  emoji:"🌿", special:95,  mrp:112 },
+        { id:"P053", name:"Bajaj Almond Drops",                      unit:"50 ml",  emoji:"🌰", special:40,  mrp:48  },
       ]
     },
+    {
+      name: "Disinfectants", sub: "Ghar saaf, germ-free!", emoji: "🧴",
+      brands: [
+        { id:"P054", name:"Lizol Citrus",  unit:"200 ml", emoji:"🍋", special:48, mrp:58 },
+        { id:"P055", name:"Harpic",        unit:"200 ml", emoji:"🚽", special:45, mrp:54 },
+      ]
+    },
+    {
+      name: "Honey", sub: "Meetha aur healthy!", emoji: "🍯",
+      brands: [
+        { id:"P050", name:"Dabur Honey", unit:"100 g", emoji:"🍯", special:70, mrp:83 },
+      ]
+    },
+    {
+      name: "Spreads", sub: "Toast pe lagao, khushi badhao!", emoji: "🍓",
+      brands: [
+        { id:"P056", name:"Kissan Mixed Fruit Jam", unit:"200 g", emoji:"🍓", special:90, mrp:108 },
+        { id:"P057", name:"Kissan Mixed Fruit Jam", unit:"95 g",  emoji:"🍓", special:25, mrp:30  },
+      ]
+    },
+    {
+      name: "Chocolate", sub: "Meetha moment!", emoji: "🍫",
+      brands: [
+        { id:"P058", name:"Cadbury Celebration", unit:"1 pcs", emoji:"🍫", special:50,  mrp:60  },
+        { id:"P059", name:"Cadbury Celebration", unit:"1 pcs", emoji:"🎁", special:110, mrp:130 },
+      ]
+    },
+    {
+      name: "Milk Mix", sub: "Dum ke saath bado!", emoji: "🥛",
+      brands: [
+        { id:"P060", name:"Horlicks",  unit:"1 pcs", emoji:"🥛", special:5,   mrp:6   },
+        { id:"P061", name:"Bournvita", unit:"1 pcs", emoji:"🍫", special:5,   mrp:6   },
+        { id:"P105", name:"Horlicks",  unit:"1 pcs", emoji:"🥛", special:264, mrp:310 },
+      ]
+    },
+    {
+      name: "Hair Colour", sub: "Style banao ghar pe!", emoji: "💇",
+      brands: [
+        { id:"P062", name:"Godrej Expert Rich Creme Natural Black",    unit:"1 pcs", emoji:"💇", special:15, mrp:18 },
+        { id:"P063", name:"Godrej Expert Original Powder Natural Black",unit:"1 pcs", emoji:"💇", special:20, mrp:24 },
+      ]
+    },
+    {
+      name: "Energy Drinks", sub: "Energy badhao, thakaan hatao!", emoji: "⚡",
+      brands: [
+        { id:"P065", name:"Glucon-D Regular",      unit:"1 pcs", emoji:"⚡", special:39, mrp:46 },
+        { id:"P066", name:"Glucon-D Tangy Orange", unit:"1 pcs", emoji:"🍊", special:55, mrp:65 },
+      ]
+    },
+    {
+      name: "Salts", sub: "Khane ka swad badhao!", emoji: "🧂",
+      brands: [
+        { id:"P067", name:"Tata Salt White", unit:"1 kg", emoji:"🧂", special:30, mrp:36 },
+      ]
+    },
+    {
+      name: "Masala & Spices", sub: "Swaad bado, har dish mein!", emoji: "🌶️",
+      brands: [
+        { id:"P068", name:"Everest Kashmiri Lal Chilli Powder",  unit:"1 pcs", emoji:"🌶️", special:10, mrp:12 },
+        { id:"P069", name:"Everest Shahi Paneer Masala",         unit:"1 pcs", emoji:"🧀", special:10, mrp:12 },
+        { id:"P070", name:"Everest Chaat Masala",                unit:"1 pcs", emoji:"🥗", special:10, mrp:12 },
+        { id:"P071", name:"MDH Garam Masala",                    unit:"1 pcs", emoji:"🌿", special:5,  mrp:6  },
+        { id:"P072", name:"Wah India Jeera Powder",              unit:"1 pcs", emoji:"🌾", special:5,  mrp:6  },
+        { id:"P073", name:"24 Carats Premium Dhania Powder",     unit:"1 pcs", emoji:"🌿", special:5,  mrp:6  },
+        { id:"P074", name:"24 Carats Premium Haldi Powder",      unit:"1 pcs", emoji:"🟡", special:5,  mrp:6  },
+        { id:"P075", name:"MDH Meat Ka Masala",                  unit:"1 pcs", emoji:"🍖", special:5,  mrp:6  },
+        { id:"P076", name:"Everest Garam Masala",                unit:"1 pcs", emoji:"🌿", special:5,  mrp:6  },
+        { id:"P078", name:"Everest Chicken Masala",              unit:"1 pcs", emoji:"🍗", special:5,  mrp:6  },
+        { id:"P079", name:"Smith & Jones Pasta Masala",          unit:"1 pcs", emoji:"🍝", special:5,  mrp:6  },
+        { id:"P080", name:"Maggi Masale-e-Magic",                unit:"1 pcs", emoji:"✨", special:5,  mrp:6  },
+        { id:"P081", name:"Kaka Jeera",                          unit:"7 g",   emoji:"🌾", special:5,  mrp:6  },
+        { id:"P082", name:"Kaka Jeera",                          unit:"16 g",  emoji:"🌾", special:10, mrp:12 },
+        { id:"P083", name:"Kaka Jeera",                          unit:"50 g",  emoji:"🌾", special:20, mrp:24 },
+        { id:"P084", name:"Kaka Jeera",                          unit:"100 g", emoji:"🌾", special:40, mrp:48 },
+      ]
+    },
+    {
+      name: "Pickles & Paste", sub: "Taste badhao!", emoji: "🫙",
+      brands: [
+        { id:"P077", name:"Nilon's Ginger Garlic Paste", unit:"1 pcs", emoji:"🧄", special:5, mrp:6 },
+      ]
+    },
+    {
+      name: "Biscuits & Cookies", sub: "Chai ke saath best combo!", emoji: "🍪",
+      brands: [
+        { id:"P022", name:"Marie Gold",                          unit:"1 pcs", emoji:"🍪", special:5,  mrp:6  },
+        { id:"P023", name:"Marie Gold",                          unit:"1 pcs", emoji:"🍪", special:10, mrp:12 },
+        { id:"P024", name:"Britannia 50-50 Classic",             unit:"1 pcs", emoji:"🍪", special:10, mrp:12 },
+        { id:"P025", name:"Britannia 50-50 Golmal Kala Jeera",   unit:"1 pcs", emoji:"🍪", special:10, mrp:12 },
+        { id:"P027", name:"Britannia GoodDay Butter Cookies",    unit:"1 pcs", emoji:"🧈", special:10, mrp:12 },
+        { id:"P028", name:"Britannia 50-50 Classic",             unit:"1 pcs", emoji:"🍪", special:5,  mrp:6  },
+        { id:"P029", name:"Britannia 50-50 Time Pass",           unit:"1 pcs", emoji:"🍪", special:10, mrp:12 },
+        { id:"P030", name:"Britannia Milk Bikis",                unit:"1 pcs", emoji:"🥛", special:5,  mrp:6  },
+        { id:"P031", name:"Britannia Tiger Kreemz Orange",       unit:"1 pcs", emoji:"🍊", special:5,  mrp:6  },
+        { id:"P032", name:"Britannia Tiger Kreemz Elaichi",      unit:"1 pcs", emoji:"🌿", special:5,  mrp:6  },
+        { id:"P033", name:"Britannia Tiger Kreemz Choco",        unit:"1 pcs", emoji:"🍫", special:5,  mrp:6  },
+        { id:"P034", name:"Britannia Tiger Kreemz Choco Milk",   unit:"1 pcs", emoji:"🍫", special:5,  mrp:6  },
+        { id:"P035", name:"Britannia Tiger Kreemz Krunch",       unit:"1 pcs", emoji:"🍪", special:5,  mrp:6  },
+        { id:"P036", name:"Britannia 50-50 Golmal Top Butter",   unit:"1 pcs", emoji:"🧈", special:5,  mrp:6  },
+        { id:"P037", name:"Snfeast MoM's Magic Ghee Roasted",    unit:"1 pcs", emoji:"🍪", special:5,  mrp:6  },
+        { id:"P038", name:"Anmol Dream Lite Salty Buttery Crunch",unit:"1 pcs",emoji:"🍪", special:5,  mrp:6  },
+        { id:"P039", name:"Unickk Butter Maska",                 unit:"1 pcs", emoji:"🧈", special:10, mrp:12 },
+        { id:"P040", name:"Unickk Snackker",                     unit:"1 pcs", emoji:"🍪", special:10, mrp:12 },
+        { id:"P041", name:"Britannia GoodDay Cashew Almond",     unit:"1 pcs", emoji:"🌰", special:40, mrp:48 },
+        { id:"P042", name:"Britannia 50-50 Top Buttery Bites",   unit:"1 pcs", emoji:"🧈", special:30, mrp:36 },
+        { id:"P043", name:"Britannia 50-50 Golmaal Kala Jeera",  unit:"1 pcs", emoji:"🍪", special:30, mrp:36 },
+        { id:"P044", name:"Britannia 50-50 Marie Gold",          unit:"1 pcs", emoji:"🍪", special:30, mrp:36 },
+        { id:"P064", name:"Britannia Milk Bikis",                unit:"1 pcs", emoji:"🥛", special:30, mrp:36 },
+        { id:"P085", name:"Britannia Marie Gold",                unit:"1 pcs", emoji:"🍪", special:40, mrp:48 },
+        { id:"P088", name:"Bisk Farm Mast Jeera",                unit:"1 pcs", emoji:"🌾", special:45, mrp:54 },
+        { id:"P089", name:"Home Bake Premium Cookies Mix (Red)", unit:"1 pcs", emoji:"🍪", special:55, mrp:65 },
+        { id:"P090", name:"Home Bake Premium Cookies Mix (Green)",unit:"1 pcs",emoji:"🍪", special:55, mrp:65 },
+        { id:"P091", name:"BABA Elaichi Toast",                  unit:"1 pcs", emoji:"🫚", special:60, mrp:72 },
+        { id:"P092", name:"Britannia NutriChoice Digestive",     unit:"1 pcs", emoji:"💚", special:55, mrp:65 },
+        { id:"P093", name:"Bisk Farm Top Herbs",                 unit:"1 pcs", emoji:"🌿", special:35, mrp:42 },
+        { id:"P094", name:"Bisk Farm Top Gold",                  unit:"1 pcs", emoji:"🥇", special:30, mrp:36 },
+        { id:"P095", name:"Bisk Farm Jeera Wonder",              unit:"1 pcs", emoji:"🌾", special:30, mrp:36 },
+        { id:"P096", name:"Parle Monaco Classic",                unit:"1 pcs", emoji:"🍪", special:70, mrp:84 },
+        { id:"P098", name:"Malkist Cheese Flavoured",            unit:"1 pcs", emoji:"🧀", special:45, mrp:54 },
+        { id:"P099", name:"Bisk Farm Coco Wonder",               unit:"1 pcs", emoji:"🍫", special:30, mrp:36 },
+        { id:"P100", name:"Britannia GoodDay Butter Cookies",    unit:"1 pcs", emoji:"🧈", special:40, mrp:48 },
+        { id:"P101", name:"Bisk Butter Biscotti",                unit:"1 pcs", emoji:"🍪", special:30, mrp:36 },
+        { id:"P102", name:"Britannia Bourbon",                   unit:"1 pcs", emoji:"🍫", special:35, mrp:42 },
+        { id:"P103", name:"Bisk Farm Champ Milkuit",             unit:"1 pcs", emoji:"🥛", special:25, mrp:30 },
+        { id:"P104", name:"Bisk Farm Ruskit",                    unit:"1 pcs", emoji:"🍞", special:35, mrp:42 },
+        { id:"P108", name:"Oreo",                                unit:"1 pcs", emoji:"⚫", special:10, mrp:12 },
+      ]
+    },
+    {
+      name: "Dry Cakes", sub: "Sweet snack anytime!", emoji: "🎂",
+      brands: [
+        { id:"P026", name:"Britannia Cake Gobbles Fruity Fun",  unit:"1 pcs", emoji:"🎂", special:10, mrp:12 },
+        { id:"P097", name:"Sliced Fruit Cake",                  unit:"1 pcs", emoji:"🍰", special:65, mrp:78 },
+        { id:"P106", name:"Tiffun Slice Mawa Cake Small",       unit:"1 pcs", emoji:"🍮", special:10, mrp:12 },
+        { id:"P107", name:"Tiffun Slice Mawa Cake Big",         unit:"1 pcs", emoji:"🍮", special:20, mrp:24 },
+      ]
+    },
+    {
+      name: "Batteries", sub: "Power on raho!", emoji: "🔋",
+      brands: [
+        { id:"P086", name:"Eveready AA Battery",  unit:"1 pcs", emoji:"🔋", special:12, mrp:15 },
+        { id:"P087", name:"Eveready AAA Battery", unit:"1 pcs", emoji:"🔋", special:10, mrp:12 },
+      ]
+    },
+  ];
+
+  // ─── TOP DEALS – best-value picks from catalog ────────────────────────
+  const topDeals = [
+    { id:1,  tag:"Grains",   name:"Ashirwad Aatta 5 kg",         emoji:"🌾", special:240, mrp:283, unit:"5 kg"   },
+    { id:2,  tag:"Oil",      name:"Independence Oil 1 L",         emoji:"🛢️", special:170, mrp:195, unit:"1 L"    },
+    { id:3,  tag:"Oil",      name:"Sadabahar Oil 1 L",            emoji:"🫙", special:175, mrp:200, unit:"1 L"    },
+    { id:4,  tag:"Oil",      name:"Fortune Refine Oil 750 ml",    emoji:"🍳", special:155, mrp:178, unit:"750 ml" },
+    { id:5,  tag:"Oil",      name:"Kings Refine Oil 750 ml",      emoji:"👑", special:135, mrp:155, unit:"750 ml" },
+    { id:6,  tag:"Pulses",   name:"Mashoor Daal 1 kg",            emoji:"🫘", special:100, mrp:118, unit:"1 kg"   },
+    { id:7,  tag:"Biscuits", name:"Britannia GoodDay Cashew Almond",emoji:"🌰",special:40, mrp:48,  unit:"1 pcs"  },
+    { id:8,  tag:"Personal", name:"Dant Kanti 200 g",             emoji:"🦷", special:106, mrp:125, unit:"200 g"  },
   ];
 
   // ─── BUILD ALL-ITEMS FLAT LIST FOR SEARCH ────────────────────────────
   let allItems = [];
   topDeals.forEach(d => {
-    allItems.push({ key: `deal_${d.id}`, name: d.name, tag: d.tag, emoji: d.emoji, mrp: d.mrp, special: d.special, type: "deal", dealId: d.id });
+    allItems.push({ key:`deal_${d.id}`, name:d.name, tag:d.tag, emoji:d.emoji, mrp:d.mrp, special:d.special, unit:d.unit, type:"deal", dealId:d.id });
   });
   categories.forEach(cat => {
     cat.brands.forEach(b => {
-      const key = `brand_${b.name.replace(/\s+/g, '_')}`;
-      // avoid duplicating items already in topDeals
-      if (!allItems.find(i => i.name === b.name)) {
-        allItems.push({ key, name: b.name, tag: cat.name, emoji: b.emoji, mrp: b.mrp, special: b.special, type: "brand" });
+      const key = `cat_${b.id}`;
+      if (!allItems.find(i => i.name === b.name && i.unit === b.unit)) {
+        allItems.push({ key, name:b.name, tag:cat.name, emoji:b.emoji, mrp:b.mrp, special:b.special, unit:b.unit, type:"brand" });
       }
     });
   });
@@ -714,8 +873,8 @@
     const items = Object.values(cart);
     const totalQty    = items.reduce((s, i) => s + i.qty, 0);
     const subtotal    = items.reduce((s, i) => s + (i.special * i.qty), 0);
-    const totalWeight = items.reduce((s, i) => s + (extractWeightGrams(i.name) * i.qty), 0);
-    const delivery    = items.length === 0 ? { charge: 0, label: "", tier: "" } : getDeliveryInfo(totalWeight);
+    const totalWeight = items.reduce((s, i) => s + (extractWeightGrams(i.unit || i.name) * i.qty), 0);
+    const delivery    = items.length === 0 ? { charge:0, label:"", tier:"" } : getDeliveryInfo(totalWeight);
     return { totalQty, subtotal, totalWeight, delivery };
   }
 
@@ -724,10 +883,10 @@
     const grid = document.getElementById("dealsGrid");
     grid.innerHTML = topDeals.map((item, i) => {
       const disc = getDiscount(item.mrp, item.special);
-      const wg   = extractWeightGrams(item.name);
-      const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
+      const wg   = extractWeightGrams(item.unit);
+      const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg%1000===0?0:1)} kg` : `${wg} g`;
       return `
-        <div class="deal-card" style="animation-delay:${i * 0.07}s">
+        <div class="deal-card" style="animation-delay:${i*0.07}s">
           <div class="deal-img">${item.emoji}</div>
           <div class="deal-info">
             <div class="deal-tag">${item.tag}</div>
@@ -736,7 +895,7 @@
               <span class="price-special">₹${item.special}</span>
               <span class="price-mrp">MRP ₹${item.mrp}</span>
               <span class="discount-badge">${disc}% OFF</span>
-              <span class="weight-badge">⚖️ ${wLabel}</span>
+              <span class="weight-badge">⚖️ ${item.unit}</span>
             </div>
           </div>
           <div id="ctrl_deal_${item.id}">
@@ -759,20 +918,18 @@
         <div class="brand-grid">
           ${cat.brands.map(b => {
             const disc = getDiscount(b.mrp, b.special);
-            const wg   = extractWeightGrams(b.name);
-            const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
-            const key  = `brand_${b.name.replace(/\s+/g, '_')}`;
+            const key  = `cat_${b.id}`;
             return `
-            <button class="brand-btn" onclick="addBrandItemToCart('${key}','${b.name.replace(/'/g,"\\'")}','${cat.name}','${b.emoji}',${b.special},${b.mrp})">
+            <button class="brand-btn" onclick="addBrandItemToCart('${key}','${b.name.replace(/'/g,"\\'")}','${b.unit}','${cat.name}','${b.emoji}',${b.special},${b.mrp})">
               <div class="brand-icon">${b.emoji}</div>
               <div class="brand-details">
                 <span class="brand-name-text">${b.name}</span>
+                <div style="font-size:0.62rem;color:var(--gray-text);margin-bottom:2px">${b.unit}</div>
                 <div class="brand-price-row">
                   <span class="brand-special">₹${b.special}</span>
                   <span class="brand-mrp">₹${b.mrp}</span>
                   <span class="brand-disc">${disc}% OFF</span>
                 </div>
-                <div style="margin-top:2px"><span style="background:#eff6ff;color:#1d4ed8;font-size:0.58rem;font-weight:700;padding:1px 5px;border-radius:6px;">⚖️ ${wLabel}</span></div>
               </div>
             </button>`;
           }).join("")}
@@ -783,38 +940,32 @@
 
   function scrollToSection(i) {
     const el = document.getElementById(`cat_${i}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) el.scrollIntoView({ behavior:"smooth", block:"start" });
   }
 
   // ─── CART OPERATIONS ──────────────────────────────────────────────────
   function addDealToCart(id) {
     const item = topDeals.find(d => d.id === id);
     const key  = `deal_${id}`;
-    if (!cart[key]) cart[key] = { ...item, key, qty: 1 };
+    if (!cart[key]) cart[key] = { ...item, key, qty:1 };
     else cart[key].qty++;
     refreshDealCtrl(id);
     updateCartUI();
   }
 
-  function addBrandItemToCart(key, name, category, emoji, special, mrp) {
-    if (!cart[key]) cart[key] = { key, name, tag: category, emoji, special, mrp, qty: 1 };
+  function addBrandItemToCart(key, name, unit, category, emoji, special, mrp) {
+    if (!cart[key]) cart[key] = { key, name, unit, tag:category, emoji, special, mrp, qty:1 };
     else cart[key].qty++;
     updateCartUI();
     const btns = document.querySelectorAll(".brand-btn");
     btns.forEach(btn => {
-      if (btn.querySelector(".brand-name-text") && btn.querySelector(".brand-name-text").textContent === name) {
+      const nameEl = btn.querySelector(".brand-name-text");
+      if (nameEl && nameEl.textContent === name) {
         btn.style.background = "var(--green-light)";
         btn.style.borderColor = "var(--green)";
-        setTimeout(() => { btn.style.background = ""; btn.style.borderColor = ""; }, 700);
+        setTimeout(() => { btn.style.background=""; btn.style.borderColor=""; }, 700);
       }
     });
-  }
-
-  function addItemToCart(key, item) {
-    if (!cart[key]) cart[key] = { ...item, key, qty: 1 };
-    else cart[key].qty++;
-    updateCartUI();
-    reRenderSearchResults();
   }
 
   function incrementItem(key) {
@@ -867,16 +1018,13 @@
   // ─── CART UI UPDATE ───────────────────────────────────────────────────
   function updateCartUI() {
     const { totalQty, subtotal, totalWeight, delivery } = cartTotals();
-
     document.getElementById("cartBadge").textContent = totalQty;
-    document.getElementById("fcBadge").textContent   = `${totalQty} item${totalQty !== 1 ? "s" : ""}`;
+    document.getElementById("fcBadge").textContent   = `${totalQty} item${totalQty!==1?"s":""}`;
     document.getElementById("fcTotal").textContent   = subtotal.toFixed(0);
-
-    const fc = document.getElementById("floatingCart");
     document.getElementById("fcDelivery").textContent = totalQty > 0
       ? `+ ₹${delivery.charge} delivery (${(totalWeight/1000).toFixed(2)} kg)`
       : "+ ₹0 delivery";
-
+    const fc = document.getElementById("floatingCart");
     totalQty > 0 ? fc.classList.add("visible") : fc.classList.remove("visible");
   }
 
@@ -901,17 +1049,17 @@
     }
 
     container.innerHTML = items.map(item => {
-      const wg     = extractWeightGrams(item.name);
-      const wLabel = wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
+      const unit   = item.unit || "1 pcs";
+      const wg     = extractWeightGrams(unit);
       const totalW = wg * item.qty;
       const tWLabel= totalW >= 1000 ? `${(totalW/1000).toFixed(2)} kg` : `${totalW} g`;
       return `
       <div class="cart-item">
         <span class="cart-item-emoji">${item.emoji || "🏷️"}</span>
         <div class="cart-item-info">
-          <div class="cart-item-name">${item.name}${item.tag ? ` <span style="color:var(--gray-text);font-weight:400;font-size:0.7rem">(${item.tag})</span>` : ""}</div>
-          <div class="cart-item-sub">₹${item.special} × ${item.qty} = ₹${(item.special * item.qty).toFixed(0)}</div>
-          <div class="cart-item-weight">⚖️ ${wLabel}/unit × ${item.qty} = ${tWLabel}</div>
+          <div class="cart-item-name">${item.name} <span style="color:var(--gray-text);font-weight:400;font-size:0.68rem">(${unit})</span>${item.tag ? ` <span style="color:var(--gray-text);font-weight:400;font-size:0.7rem">[${item.tag}]</span>` : ""}</div>
+          <div class="cart-item-sub">₹${item.special} × ${item.qty} = ₹${(item.special*item.qty).toFixed(0)}</div>
+          <div class="cart-item-weight">⚖️ ${unit} × ${item.qty} = ${tWLabel}</div>
         </div>
         <div class="qty-ctrl" style="margin-right:4px">
           <button class="qty-btn" onclick="decrementItem('${item.key}')">−</button>
@@ -923,7 +1071,7 @@
     }).join("");
 
     const { subtotal, totalWeight, delivery } = cartTotals();
-    const kgDisplay  = (totalWeight / 1000).toFixed(2);
+    const kgDisplay  = (totalWeight/1000).toFixed(2);
     const grandTotal = subtotal + delivery.charge;
 
     footer.innerHTML = `
@@ -990,7 +1138,8 @@
 
     const results = allItems.filter(item =>
       item.name.toLowerCase().includes(q) ||
-      item.tag.toLowerCase().includes(q)
+      item.tag.toLowerCase().includes(q) ||
+      (item.unit && item.unit.toLowerCase().includes(q))
     );
 
     const titleEl = document.getElementById("searchResultTitle");
@@ -1010,8 +1159,6 @@
 
     grid.innerHTML = results.map((item, i) => {
       const disc  = getDiscount(item.mrp, item.special);
-      const wg    = extractWeightGrams(item.name);
-      const wLabel= wg >= 1000 ? `${(wg/1000).toFixed(wg % 1000 === 0 ? 0 : 1)} kg` : `${wg} g`;
       const qty   = cart[item.key] ? cart[item.key].qty : 0;
       const ctrl  = qty === 0
         ? `<button class="add-btn" onclick="searchAdd('${item.key}')">+ ADD</button>`
@@ -1021,7 +1168,7 @@
              <button class="qty-btn" onclick="searchInc('${item.key}')">+</button>
            </div>`;
       return `
-        <div class="deal-card" style="animation-delay:${i * 0.05}s" id="sr_${item.key}">
+        <div class="deal-card" style="animation-delay:${i*0.05}s" id="sr_${item.key}">
           <div class="deal-img">${item.emoji}</div>
           <div class="deal-info">
             <div class="deal-tag">${item.tag}</div>
@@ -1030,7 +1177,7 @@
               <span class="price-special">₹${item.special}</span>
               <span class="price-mrp">MRP ₹${item.mrp}</span>
               <span class="discount-badge">${disc}% OFF</span>
-              <span class="weight-badge">⚖️ ${wLabel}</span>
+              <span class="weight-badge">⚖️ ${item.unit||"1 pcs"}</span>
             </div>
           </div>
           <div id="src_${item.key}">${ctrl}</div>
@@ -1041,7 +1188,7 @@
   function searchAdd(key) {
     const item = allItems.find(i => i.key === key);
     if (!item) return;
-    if (!cart[key]) cart[key] = { ...item, qty: 1 };
+    if (!cart[key]) cart[key] = { ...item, qty:1 };
     else cart[key].qty++;
     if (key.startsWith("deal_")) refreshDealCtrl(parseInt(key.replace("deal_","")));
     updateCartUI();
@@ -1056,8 +1203,8 @@
   }
 
   function reRenderSearchResults() {
-    const q = document.getElementById("searchInput").value.trim().toLowerCase();
-    if (q.length > 0) handleSearch(document.getElementById("searchInput").value);
+    const q = document.getElementById("searchInput").value.trim();
+    if (q.length > 0) handleSearch(q);
   }
 
   function clearSearch() {
@@ -1074,7 +1221,7 @@
 
   function openModal() {
     document.getElementById("customerModal").classList.add("open");
-    ["nameErr","addrErr","phoneErr"].forEach(id => document.getElementById(id).style.display = "none");
+    ["nameErr","addrErr","phoneErr"].forEach(id => document.getElementById(id).style.display="none");
     ["custName","custAddress","custPhone"].forEach(id => document.getElementById(id).classList.remove("field-error"));
   }
 
@@ -1088,19 +1235,19 @@
     const phone   = document.getElementById("custPhone").value.trim();
     let valid = true;
 
-    if (!name)                   { document.getElementById("nameErr").style.display  = "block"; document.getElementById("custName").classList.add("field-error"); valid = false; }
-    else                         { document.getElementById("nameErr").style.display  = "none";  document.getElementById("custName").classList.remove("field-error"); }
-    if (!address)                { document.getElementById("addrErr").style.display  = "block"; document.getElementById("custAddress").classList.add("field-error"); valid = false; }
-    else                         { document.getElementById("addrErr").style.display  = "none";  document.getElementById("custAddress").classList.remove("field-error"); }
-    if (!/^\d{10}$/.test(phone)) { document.getElementById("phoneErr").style.display = "block"; document.getElementById("custPhone").classList.add("field-error"); valid = false; }
-    else                         { document.getElementById("phoneErr").style.display = "none";  document.getElementById("custPhone").classList.remove("field-error"); }
+    if (!name)                   { document.getElementById("nameErr").style.display="block";  document.getElementById("custName").classList.add("field-error"); valid=false; }
+    else                         { document.getElementById("nameErr").style.display="none";   document.getElementById("custName").classList.remove("field-error"); }
+    if (!address)                { document.getElementById("addrErr").style.display="block";  document.getElementById("custAddress").classList.add("field-error"); valid=false; }
+    else                         { document.getElementById("addrErr").style.display="none";   document.getElementById("custAddress").classList.remove("field-error"); }
+    if (!/^\d{10}$/.test(phone)) { document.getElementById("phoneErr").style.display="block"; document.getElementById("custPhone").classList.add("field-error"); valid=false; }
+    else                         { document.getElementById("phoneErr").style.display="none";  document.getElementById("custPhone").classList.remove("field-error"); }
 
     if (!valid) return;
 
     const items = Object.values(cart);
     const { subtotal, totalWeight, delivery } = cartTotals();
     const grandTotal = subtotal + delivery.charge;
-    const kgDisplay  = (totalWeight / 1000).toFixed(2);
+    const kgDisplay  = (totalWeight/1000).toFixed(2);
 
     let msg = "🛒 *New Order – Order Kaaro*\n";
     msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
@@ -1110,7 +1257,7 @@
     msg += "*🛍️ Order Details:*\n\n";
     items.forEach(item => {
       const lineTotal = (item.special * item.qty).toFixed(0);
-      msg += `• ${item.name}\n  Qty: ${item.qty}  |  ₹${item.special} each  |  *₹${lineTotal}*\n\n`;
+      msg += `• ${item.name} (${item.unit||"1 pcs"})\n  Qty: ${item.qty}  |  ₹${item.special} each  |  *₹${lineTotal}*\n\n`;
     });
     msg += "━━━━━━━━━━━━━━━━━━━━\n";
     msg += `🧾 Items Subtotal: ₹${subtotal.toFixed(0)}\n`;
@@ -1127,15 +1274,15 @@
   // ─── CHIP SCROLL FUNCTIONS ────────────────────────────────────────────
   function scrollToTopDeals() {
     setActiveChip(0);
-    document.getElementById("dealsGrid").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("dealsGrid").scrollIntoView({ behavior:"smooth", block:"start" });
   }
 
   function scrollToCatByName(keyword) {
     const idx = categories.findIndex(c => c.name.toLowerCase().includes(keyword.toLowerCase()));
     if (idx === -1) return;
-    setActiveChip(idx + 1); // +1 because index 0 is "Top Deals"
+    setActiveChip(idx + 1);
     const el = document.getElementById(`cat_${idx}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) el.scrollIntoView({ behavior:"smooth", block:"start" });
   }
 
   function setActiveChip(activeIndex) {
