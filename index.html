@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -73,7 +73,7 @@
 
     .product-unit { font-size: 0.65rem; font-weight: 600; color: var(--gray); margin-bottom: 3px; }
     .product-name { font-size: 0.78rem; font-weight: 700; color: var(--dark); line-height: 1.3; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .product-price-row { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+    .product-price-row { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; min-height: 1.1rem; }
     .product-price { font-size: 0.88rem; font-weight: 800; color: var(--dark); }
     .product-mrp { font-size: 0.7rem; color: var(--gray); text-decoration: line-through; }
     .product-add-btn { width: 100%; background: var(--white); border: 1.5px solid var(--green); border-radius: 8px; padding: 6px 0; font-family: inherit; font-size: 0.78rem; font-weight: 800; color: var(--green); cursor: pointer; transition: all 0.15s; }
@@ -89,7 +89,7 @@
     .deals-scroll { display: flex; gap: 10px; padding-bottom: 4px; }
     .deal-card { flex-shrink: 0; width: 145px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; transition: box-shadow 0.2s; }
     .deal-card:hover { box-shadow: var(--shadow-md); }
-    .deal-discount { font-size: 0.6rem; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+    .deal-discount { font-size: 0.6rem; font-weight: 800; color: var(--green); margin-bottom: 4px; min-height: 0.9rem; }
 
     /* Deal card image */
     .deal-img-wrap { width: 72px; height: 72px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; }
@@ -226,15 +226,15 @@
   <div class="promo-card">
     <div class="promo-text">
       <h2>Fresh Groceries, Delivered Fast!</h2>
-      <p>Best prices on 100+ daily essentials. Order now on WhatsApp.</p>
+      <p>Best prices on 90+ daily essentials. Order now on WhatsApp.</p>
     </div>
     <div class="promo-emoji">🥦</div>
   </div>
 
   <div class="section-head" id="topDealsAnchor">
     <div class="section-head-left">
-      <span class="section-title">🔥 Top Deals</span>
-      <span class="section-badge">SAVE BIG</span>
+      <span class="section-title">⭐ Top Picks</span>
+      <span class="section-badge">POPULAR</span>
     </div>
   </div>
   <div class="deals-scroll-wrap">
@@ -325,7 +325,7 @@ function offImgUrl(barcode) {
 
 function imgEl(barcode, emoji, cls) {
   const url = offImgUrl(barcode);
-  if (!url) return `<div class="${cls}"><span class="emoji-fallback">${emoji}</span></div>`;
+  if (!url) return `<div class="${cls}"><span class="emoji-fallback" style="display:block">${emoji}</span></div>`;
   return `<div class="${cls}">
     <img src="${url}" alt="" loading="lazy" onerror="this.classList.add('error')">
     <span class="emoji-fallback">${emoji}</span>
@@ -351,168 +351,143 @@ function getDelivery(grams) {
   if (kg<=11) return {charge:80,  label:"5–11 kg",     tier:"🟡 Medium"};
   return             {charge:120, label:"Above 11 kg", tier:"🔴 Heavy"};
 }
-function disc(mrp, sp) { return Math.round(((mrp-sp)/mrp)*100); }
+function disc(mrp, sp) { if (!mrp || mrp<=sp) return 0; return Math.round(((mrp-sp)/mrp)*100); }
 
 // ── PRODUCT DATA ─────────────────────────────────────────────────────
-// barcode: real EAN-13 barcode used for Open Food Facts image lookup
+// barcode: real EAN-13 barcode used for Open Food Facts image lookup (null = use emoji)
 const categories = [
   { name:"Grains & Atta", emoji:"🌾", sub:"Ghar ki roti ke liye best!", brands:[
-    {id:"P001",name:"Ashirwad Aatta",          unit:"5 kg",   emoji:"🌾", special:240,mrp:283, barcode:"8901725121129"},
-    {id:"P016",name:"Ganesh Aata",              unit:"1 kg",   emoji:"🌿", special:48, mrp:58,  barcode:null},
-    {id:"P007",name:"Kala Chana",               unit:"1 kg",   emoji:"🟤", special:80, mrp:95,  barcode:null},
-    {id:"P009",name:"Chura / Poha",             unit:"1 kg",   emoji:"🍚", special:40, mrp:48,  barcode:null},
-    {id:"P010",name:"Muri",                     unit:"110 g",  emoji:"🌾", special:10, mrp:12,  barcode:null},
-    {id:"P011",name:"Muri",                     unit:"300 g",  emoji:"🌾", special:25, mrp:30,  barcode:null},
-    {id:"P012",name:"Anoop Sattu",              unit:"200 g",  emoji:"💪", special:35, mrp:42,  barcode:null},
+    {id:"P001",name:"Aashirvaad Shud Chakki Aata",   unit:"5 kg",   emoji:"🌾", special:240, mrp:240, barcode:null},
+    {id:"P002",name:"Amrit Bhog Atta",                unit:"5 kg",   emoji:"🌾", special:220, mrp:220, barcode:null},
+    {id:"P010",name:"Besan",                          unit:"1 kg",   emoji:"🟡", special:90,  mrp:90,  barcode:null},
+    {id:"P055",name:"Gota Kala Channa",                unit:"500 g",  emoji:"🟤", special:45,  mrp:45,  barcode:null},
+    {id:"P056",name:"Kala Channa",                     unit:"1 kg",   emoji:"🟤", special:90,  mrp:90,  barcode:null},
+    {id:"P058",name:"Kabuli Channa",                   unit:"1 kg",   emoji:"⚪", special:95,  mrp:95,  barcode:null},
+    {id:"P059",name:"Kabuli Channa",                   unit:"500 g",  emoji:"⚪", special:50,  mrp:50,  barcode:null},
+    {id:"P060",name:"Kala Chana",                      unit:"1 kg",   emoji:"🟤", special:80,  mrp:80,  barcode:null},
+    {id:"P061",name:"Kala Chana",                      unit:"500 g",  emoji:"🟤", special:40,  mrp:40,  barcode:null},
+    {id:"P064",name:"Katarni Chura",                   unit:"500 g",  emoji:"🍚", special:50,  mrp:50,  barcode:null},
+    {id:"P065",name:"Katarni Chura",                   unit:"1 kg",   emoji:"🍚", special:90,  mrp:90,  barcode:null},
+    {id:"P077",name:"Moth",                             unit:"1 kg",   emoji:"🌾", special:90,  mrp:90,  barcode:null},
+    {id:"P085",name:"Sattu",                            unit:"200 g",  emoji:"💪", special:31,  mrp:31,  barcode:null},
+    {id:"P086",name:"Sattu",                            unit:"400 g",  emoji:"💪", special:70,  mrp:70,  barcode:null},
+    {id:"P090",name:"Amrit Bhog Sooji",                 unit:"1 kg",   emoji:"🌾", special:60,  mrp:60,  barcode:null},
   ]},
-  { name:"Oil", emoji:"🛢️", sub:"Khana pakao sahi tel se", brands:[
-    {id:"P002",name:"Independence Oil",         unit:"1 L",    emoji:"🛢️", special:170,mrp:195, barcode:null},
-    {id:"P003",name:"Sadabahar Oil",            unit:"1 L",    emoji:"🫙", special:175,mrp:200, barcode:null},
-    {id:"P004",name:"Fortune Refine Oil",       unit:"750 ml", emoji:"🍳", special:155,mrp:178, barcode:"8901030869419"},
-    {id:"P005",name:"Kings Refine Oil",         unit:"750 ml", emoji:"👑", special:135,mrp:155, barcode:null},
+  { name:"Dairy", emoji:"🧀", sub:"Fresh dairy, ghar tak!", brands:[
+    {id:"P003",name:"Amul Cheese Cubes",               unit:"1 pcs",  emoji:"🧀", special:17,  mrp:17,  barcode:null},
+    {id:"P004",name:"Amul Ghee",                        unit:"1 kg",   emoji:"🧈", special:55,  mrp:55,  barcode:null},
   ]},
   { name:"Pulses & Dal", emoji:"🫘", sub:"Protein-rich, dal roz khaao", brands:[
-    {id:"P006",name:"Mashoor Daal",             unit:"1 kg",   emoji:"🫘", special:100,mrp:118, barcode:null},
-    {id:"P008",name:"Chana Daal",               unit:"1 kg",   emoji:"💛", special:100,mrp:118, barcode:null},
+    {id:"P006",name:"Arahar Dal",                       unit:"1 kg",   emoji:"🫘", special:130, mrp:130, barcode:null},
+    {id:"P007",name:"Arahar Dal",                        unit:"500 g",  emoji:"🫘", special:65,  mrp:65,  barcode:null},
+    {id:"P031",name:"Dal Makhani Special Dal",           unit:"500 g",  emoji:"🍛", special:90,  mrp:90,  barcode:null},
+    {id:"P032",name:"Dal Makhani Special Dal",           unit:"1 kg",   emoji:"🍛", special:180, mrp:180, barcode:null},
+    {id:"P043",name:"Gota Kalai Dal",                    unit:"500 g",  emoji:"🫘", special:60,  mrp:60,  barcode:null},
+    {id:"P044",name:"Gota Kalai Dal",                    unit:"1 kg",   emoji:"🫘", special:120, mrp:120, barcode:null},
+    {id:"P045",name:"Gota Massor Dal",                   unit:"500 g",  emoji:"🟠", special:70,  mrp:70,  barcode:null},
+    {id:"P046",name:"Gota Massor Dal",                   unit:"1 kg",   emoji:"🟠", special:140, mrp:140, barcode:null},
+    {id:"P047",name:"Gota Massur Dal",                   unit:"1 kg",   emoji:"🟠", special:120, mrp:120, barcode:null},
+    {id:"P048",name:"Gota Massur Dal",                   unit:"500 g",  emoji:"🟠", special:60,  mrp:60,  barcode:null},
+    {id:"P049",name:"Gota Moong Dal",                    unit:"500 g",  emoji:"💛", special:60,  mrp:60,  barcode:null},
+    {id:"P050",name:"Gota Moong Dal",                    unit:"1 kg",   emoji:"💛", special:120, mrp:120, barcode:null},
+    {id:"P062",name:"Kalai Dal",                          unit:"500 g",  emoji:"🫘", special:70,  mrp:70,  barcode:null},
+    {id:"P063",name:"Kalai Dal",                          unit:"1 kg",   emoji:"🫘", special:140, mrp:140, barcode:null},
+    {id:"P071",name:"Massor Dal",                         unit:"500 g",  emoji:"🟠", special:50,  mrp:50,  barcode:null},
+    {id:"P072",name:"Massor Dal",                         unit:"1 kg",   emoji:"🟠", special:100, mrp:100, barcode:null},
+    {id:"P075",name:"Moong Dal",                          unit:"1 kg",   emoji:"💛", special:120, mrp:120, barcode:null},
+    {id:"P076",name:"Moong Dal",                          unit:"500 g",  emoji:"💛", special:60,  mrp:60,  barcode:null},
   ]},
-  { name:"Detergents", emoji:"🧺", sub:"Kapde saaf, chamakdar!", brands:[
-    {id:"P013",name:"Surf Excel Detergent",     unit:"500 g",  emoji:"🧺", special:71, mrp:85,  barcode:"8901030610514"},
-    {id:"P014",name:"Wheel Detergent",          unit:"500 g",  emoji:"💧", special:41, mrp:50,  barcode:"8901030592452"},
-    {id:"P015",name:"Ghadi Detergent",          unit:"100 g",  emoji:"✨", special:10, mrp:12,  barcode:null},
-  ]},
-  { name:"Soaps", emoji:"🧼", sub:"Saaf raho, healthy raho", brands:[
-    {id:"P017",name:"Lux Soap",                 unit:"1 pcs",  emoji:"🌸", special:38, mrp:46,  barcode:"8901030015977"},
-    {id:"P018",name:"Pears Soap",               unit:"1 pcs",  emoji:"🫧", special:20, mrp:25,  barcode:"8901030006937"},
-    {id:"P019",name:"Surf Excel Soap",          unit:"1 pcs",  emoji:"🧼", special:38, mrp:46,  barcode:"8901030620360"},
-  ]},
-  { name:"Personal Care", emoji:"🦷", sub:"Healthy raho, fresh raho!", brands:[
-    {id:"P020",name:"Dant Kanti",               unit:"200 g",  emoji:"🦷", special:106,mrp:125, barcode:"8906003411092"},
-    {id:"P021",name:"Pro-ease Go XL",           unit:"1 pcs",  emoji:"🪥", special:38, mrp:45,  barcode:null},
-    {id:"P045",name:"Dettol Antiseptic",        unit:"1 pcs",  emoji:"🧴", special:40, mrp:48,  barcode:"8901396034098"},
-    {id:"P046",name:"Nihar Coconut Oil",        unit:"1 pcs",  emoji:"🥥", special:50, mrp:60,  barcode:"8901725136536"},
-    {id:"P047",name:"Nihar Methi Jasmine Oil",  unit:"200 ml", emoji:"🌸", special:88, mrp:105, barcode:"8901725136574"},
-    {id:"P048",name:"Nihar Coconut Oil +20%",   unit:"1 pcs",  emoji:"🥥", special:80, mrp:95,  barcode:null},
-    {id:"P049",name:"Dabur Lal Dantmanjan",     unit:"1 pcs",  emoji:"🦷", special:38, mrp:45,  barcode:"8901207020742"},
-    {id:"P051",name:"Nihar Pure Coconut Oil",   unit:"192 ml", emoji:"🥥", special:95, mrp:112, barcode:null},
-    {id:"P052",name:"Emami Kesh King Oil",      unit:"50 ml",  emoji:"🌿", special:95, mrp:112, barcode:"8904001500019"},
-    {id:"P053",name:"Bajaj Almond Drops",       unit:"50 ml",  emoji:"🌰", special:40, mrp:48,  barcode:"8901107003433"},
-  ]},
-  { name:"Disinfectants", emoji:"🧴", sub:"Ghar saaf, germ-free!", brands:[
-    {id:"P054",name:"Lizol Citrus",             unit:"200 ml", emoji:"🍋", special:48, mrp:58,  barcode:"8901554400514"},
-    {id:"P055",name:"Harpic Power Plus",        unit:"200 ml", emoji:"🚽", special:45, mrp:54,  barcode:"8901554452246"},
-  ]},
-  { name:"Honey", emoji:"🍯", sub:"Meetha aur healthy!", brands:[
-    {id:"P050",name:"Dabur Honey",              unit:"100 g",  emoji:"🍯", special:70, mrp:83,  barcode:"8901207010873"},
-  ]},
-  { name:"Spreads", emoji:"🍓", sub:"Toast pe lagao, khushi badhao!", brands:[
-    {id:"P056",name:"Kissan Mixed Fruit Jam",   unit:"200 g",  emoji:"🍓", special:90, mrp:108, barcode:"8901725153854"},
-    {id:"P057",name:"Kissan Mixed Fruit Jam",   unit:"95 g",   emoji:"🍓", special:25, mrp:30,  barcode:null},
-  ]},
-  { name:"Chocolate", emoji:"🍫", sub:"Meetha moment!", brands:[
-    {id:"P058",name:"Cadbury Celebration",      unit:"1 pcs",  emoji:"🍫", special:50, mrp:60,  barcode:"7622201432812"},
-    {id:"P059",name:"Cadbury Celebration Gift", unit:"1 pcs",  emoji:"🎁", special:110,mrp:130, barcode:null},
-  ]},
-  { name:"Milk Mix", emoji:"🥛", sub:"Dum ke saath bado!", brands:[
-    {id:"P060",name:"Horlicks",                 unit:"1 pcs",  emoji:"🥛", special:5,  mrp:6,   barcode:null},
-    {id:"P061",name:"Bournvita",                unit:"1 pcs",  emoji:"🍫", special:5,  mrp:6,   barcode:null},
-    {id:"P105",name:"Horlicks",                 unit:"1 pcs",  emoji:"🥛", special:264,mrp:310, barcode:"8901396044394"},
-  ]},
-  { name:"Hair Colour", emoji:"💇", sub:"Style banao ghar pe!", brands:[
-    {id:"P062",name:"Godrej Expert Natural Black Creme", unit:"1 pcs", emoji:"💇", special:15,mrp:18, barcode:"8901000000018"},
-    {id:"P063",name:"Godrej Expert Powder Black",        unit:"1 pcs", emoji:"💇", special:20,mrp:24, barcode:null},
-  ]},
-  { name:"Energy Drinks", emoji:"⚡", sub:"Energy badhao!", brands:[
-    {id:"P065",name:"Glucon-D Regular",         unit:"1 pcs",  emoji:"⚡", special:39, mrp:46,  barcode:"8901207064807"},
-    {id:"P066",name:"Glucon-D Tangy Orange",    unit:"1 pcs",  emoji:"🍊", special:55, mrp:65,  barcode:null},
-  ]},
-  { name:"Salts", emoji:"🧂", sub:"Khane ka swad badhao!", brands:[
-    {id:"P067",name:"Tata Salt",                unit:"1 kg",   emoji:"🧂", special:30, mrp:36,  barcode:"8901725141660"},
-  ]},
-  { name:"Masala & Spices", emoji:"🌶️", sub:"Swaad bado, har dish mein!", brands:[
-    {id:"P068",name:"Everest Kashmiri Lal Chilli",unit:"1 pcs",emoji:"🌶️",special:10, mrp:12,  barcode:"8901888000178"},
-    {id:"P069",name:"Everest Shahi Paneer Masala",unit:"1 pcs",emoji:"🧀", special:10, mrp:12,  barcode:"8901888000024"},
-    {id:"P070",name:"Everest Chaat Masala",     unit:"1 pcs",  emoji:"🥗", special:10, mrp:12,  barcode:"8901888000109"},
-    {id:"P071",name:"MDH Garam Masala",         unit:"1 pcs",  emoji:"🌿", special:5,  mrp:6,   barcode:"8906016001069"},
-    {id:"P072",name:"Wah India Jeera Powder",   unit:"1 pcs",  emoji:"🌾", special:5,  mrp:6,   barcode:null},
-    {id:"P073",name:"24 Carats Dhania Powder",  unit:"1 pcs",  emoji:"🌿", special:5,  mrp:6,   barcode:null},
-    {id:"P074",name:"24 Carats Haldi Powder",   unit:"1 pcs",  emoji:"🟡", special:5,  mrp:6,   barcode:null},
-    {id:"P075",name:"MDH Meat Ka Masala",       unit:"1 pcs",  emoji:"🍖", special:5,  mrp:6,   barcode:null},
-    {id:"P076",name:"Everest Garam Masala",     unit:"1 pcs",  emoji:"🌿", special:5,  mrp:6,   barcode:"8901888000055"},
-    {id:"P078",name:"Everest Chicken Masala",   unit:"1 pcs",  emoji:"🍗", special:5,  mrp:6,   barcode:"8901888000031"},
-    {id:"P079",name:"Smith & Jones Pasta Masala",unit:"1 pcs", emoji:"🍝", special:5,  mrp:6,   barcode:null},
-    {id:"P080",name:"Maggi Masale-e-Magic",     unit:"1 pcs",  emoji:"✨", special:5,  mrp:6,   barcode:"8901058827313"},
-    {id:"P081",name:"Kaka Jeera",               unit:"7 g",    emoji:"🌾", special:5,  mrp:6,   barcode:null},
-    {id:"P082",name:"Kaka Jeera",               unit:"16 g",   emoji:"🌾", special:10, mrp:12,  barcode:null},
-    {id:"P083",name:"Kaka Jeera",               unit:"50 g",   emoji:"🌾", special:20, mrp:24,  barcode:null},
-    {id:"P084",name:"Kaka Jeera",               unit:"100 g",  emoji:"🌾", special:40, mrp:48,  barcode:null},
-  ]},
-  { name:"Pickles & Paste", emoji:"🫙", sub:"Taste badhao!", brands:[
-    {id:"P077",name:"Nilon's Ginger Garlic Paste",unit:"1 pcs",emoji:"🧄", special:5,  mrp:6,   barcode:null},
+  { name:"Oil", emoji:"🛢️", sub:"Khana pakao sahi tel se", brands:[
+    {id:"P033",name:"Dhara Kachi Gani",                  unit:"1 L",    emoji:"🛢️", special:179,  mrp:179,  barcode:null},
+    {id:"P035",name:"Fortune Kachi Gani",                unit:"1 L",    emoji:"🛢️", special:178,  mrp:178,  barcode:null},
+    {id:"P036",name:"Fortune Kachi Ghani",               unit:"1 L",    emoji:"🛢️", special:180,  mrp:180,  barcode:null},
+    {id:"P037",name:"Fortune Kachi Ghanni Jar",          unit:"15 kg",  emoji:"🛢️", special:2765, mrp:2765, barcode:null},
+    {id:"P038",name:"Fortune Soya Refine",               unit:"1 L",    emoji:"🍳", special:145,  mrp:145,  barcode:null},
+    {id:"P066",name:"King Kachi Ghani",                  unit:"1 L",    emoji:"👑", special:165,  mrp:165,  barcode:null},
+    {id:"P067",name:"King Soya Refine",                  unit:"1 L",    emoji:"👑", special:120,  mrp:120,  barcode:null},
   ]},
   { name:"Biscuits & Cookies", emoji:"🍪", sub:"Chai ke saath best combo!", brands:[
-    {id:"P022",name:"Marie Gold",               unit:"1 pcs",  emoji:"🍪", special:5,  mrp:6,   barcode:"8901063031364"},
-    {id:"P023",name:"Marie Gold",               unit:"1 pcs",  emoji:"🍪", special:10, mrp:12,  barcode:"8901063031364"},
-    {id:"P024",name:"Britannia 50-50 Classic",  unit:"1 pcs",  emoji:"🍪", special:10, mrp:12,  barcode:"8901063085039"},
-    {id:"P025",name:"50-50 Golmal Kala Jeera",  unit:"1 pcs",  emoji:"🍪", special:10, mrp:12,  barcode:null},
-    {id:"P027",name:"GoodDay Butter Cookies",   unit:"1 pcs",  emoji:"🧈", special:10, mrp:12,  barcode:"8901063033740"},
-    {id:"P028",name:"Britannia 50-50 Classic",  unit:"1 pcs",  emoji:"🍪", special:5,  mrp:6,   barcode:"8901063085039"},
-    {id:"P029",name:"50-50 Time Pass",          unit:"1 pcs",  emoji:"🍪", special:10, mrp:12,  barcode:null},
-    {id:"P030",name:"Britannia Milk Bikis",     unit:"1 pcs",  emoji:"🥛", special:5,  mrp:6,   barcode:"8901063035690"},
-    {id:"P031",name:"Tiger Kreemz Orange",      unit:"1 pcs",  emoji:"🍊", special:5,  mrp:6,   barcode:null},
-    {id:"P032",name:"Tiger Kreemz Elaichi",     unit:"1 pcs",  emoji:"🌿", special:5,  mrp:6,   barcode:null},
-    {id:"P033",name:"Tiger Kreemz Choco",       unit:"1 pcs",  emoji:"🍫", special:5,  mrp:6,   barcode:null},
-    {id:"P034",name:"Tiger Kreemz Choco Milk",  unit:"1 pcs",  emoji:"🍫", special:5,  mrp:6,   barcode:null},
-    {id:"P035",name:"Tiger Kreemz Krunch",      unit:"1 pcs",  emoji:"🍪", special:5,  mrp:6,   barcode:null},
-    {id:"P036",name:"50-50 Golmal Top Butter",  unit:"1 pcs",  emoji:"🧈", special:5,  mrp:6,   barcode:null},
-    {id:"P037",name:"Snfeast MoM's Magic Ghee", unit:"1 pcs",  emoji:"🍪", special:5,  mrp:6,   barcode:null},
-    {id:"P038",name:"Anmol Dream Lite Salty",   unit:"1 pcs",  emoji:"🍪", special:5,  mrp:6,   barcode:null},
-    {id:"P039",name:"Unickk Butter Maska",      unit:"1 pcs",  emoji:"🧈", special:10, mrp:12,  barcode:null},
-    {id:"P040",name:"Unickk Snackker",          unit:"1 pcs",  emoji:"🍪", special:10, mrp:12,  barcode:null},
-    {id:"P041",name:"GoodDay Cashew Almond",    unit:"1 pcs",  emoji:"🌰", special:40, mrp:48,  barcode:"8901063033764"},
-    {id:"P042",name:"50-50 Top Buttery Bites",  unit:"1 pcs",  emoji:"🧈", special:30, mrp:36,  barcode:null},
-    {id:"P043",name:"50-50 Golmaal Kala Jeera", unit:"1 pcs",  emoji:"🍪", special:30, mrp:36,  barcode:null},
-    {id:"P044",name:"50-50 Marie Gold",         unit:"1 pcs",  emoji:"🍪", special:30, mrp:36,  barcode:"8901063031364"},
-    {id:"P064",name:"Britannia Milk Bikis",     unit:"1 pcs",  emoji:"🥛", special:30, mrp:36,  barcode:"8901063035690"},
-    {id:"P085",name:"Britannia Marie Gold",     unit:"1 pcs",  emoji:"🍪", special:40, mrp:48,  barcode:"8901063031364"},
-    {id:"P088",name:"Bisk Farm Mast Jeera",     unit:"1 pcs",  emoji:"🌾", special:45, mrp:54,  barcode:null},
-    {id:"P089",name:"Home Bake Premium Cookies (Red)", unit:"1 pcs", emoji:"🍪", special:55,mrp:65, barcode:null},
-    {id:"P090",name:"Home Bake Premium Cookies (Green)",unit:"1 pcs",emoji:"🍪", special:55,mrp:65,barcode:null},
-    {id:"P091",name:"BABA Elaichi Toast",       unit:"1 pcs",  emoji:"🫚", special:60, mrp:72,  barcode:null},
-    {id:"P092",name:"NutriChoice Digestive",    unit:"1 pcs",  emoji:"💚", special:55, mrp:65,  barcode:"8901063064203"},
-    {id:"P093",name:"Bisk Farm Top Herbs",      unit:"1 pcs",  emoji:"🌿", special:35, mrp:42,  barcode:null},
-    {id:"P094",name:"Bisk Farm Top Gold",       unit:"1 pcs",  emoji:"🥇", special:30, mrp:36,  barcode:null},
-    {id:"P095",name:"Bisk Farm Jeera Wonder",   unit:"1 pcs",  emoji:"🌾", special:30, mrp:36,  barcode:null},
-    {id:"P096",name:"Parle Monaco Classic",     unit:"1 pcs",  emoji:"🍪", special:70, mrp:84,  barcode:"8901719114175"},
-    {id:"P098",name:"Malkist Cheese Flavoured", unit:"1 pcs",  emoji:"🧀", special:45, mrp:54,  barcode:null},
-    {id:"P099",name:"Bisk Farm Coco Wonder",    unit:"1 pcs",  emoji:"🍫", special:30, mrp:36,  barcode:null},
-    {id:"P100",name:"GoodDay Butter Cookies",   unit:"1 pcs",  emoji:"🧈", special:40, mrp:48,  barcode:"8901063033740"},
-    {id:"P101",name:"Bisk Butter Biscotti",     unit:"1 pcs",  emoji:"🍪", special:30, mrp:36,  barcode:null},
-    {id:"P102",name:"Britannia Bourbon",        unit:"1 pcs",  emoji:"🍫", special:35, mrp:42,  barcode:"8901063110185"},
-    {id:"P103",name:"Bisk Farm Champ Milkuit",  unit:"1 pcs",  emoji:"🥛", special:25, mrp:30,  barcode:null},
-    {id:"P104",name:"Bisk Farm Ruskit",         unit:"1 pcs",  emoji:"🍞", special:35, mrp:42,  barcode:null},
-    {id:"P108",name:"Oreo",                     unit:"1 pcs",  emoji:"⚫", special:10, mrp:12,  barcode:"7622210449283"},
+    {id:"P005",name:"Anmol Dream Lite Salty Butterly Crunch", unit:"1 pcs", emoji:"🍪", special:5,  mrp:5,  barcode:null},
+    {id:"P008",name:"Baba Elaichi Toast",                unit:"1 pcs",  emoji:"🫚", special:60, mrp:60, barcode:null},
+    {id:"P009",name:"Baba Toasts",                       unit:"1 pcs",  emoji:"🍞", special:70, mrp:70, barcode:null},
+    {id:"P011",name:"Bisk Butter Biscotti",              unit:"1 pcs",  emoji:"🍪", special:30, mrp:30, barcode:null},
+    {id:"P012",name:"Bisk Farm Champ Milkuit",           unit:"1 pcs",  emoji:"🥛", special:25, mrp:25, barcode:null},
+    {id:"P013",name:"Bisk Farm Coco Wonder",             unit:"1 pcs",  emoji:"🍫", special:30, mrp:30, barcode:null},
+    {id:"P014",name:"Bisk Farm Jeera Wonder",            unit:"1 pcs",  emoji:"🌾", special:30, mrp:30, barcode:null},
+    {id:"P015",name:"Bisk Farm Mast Jeera",              unit:"1 pcs",  emoji:"🌾", special:45, mrp:45, barcode:null},
+    {id:"P016",name:"Bisk Farm Ruskit",                  unit:"1 pcs",  emoji:"🍞", special:35, mrp:35, barcode:null},
+    {id:"P017",name:"Bisk Farm Top Gold",                unit:"1 pcs",  emoji:"🥇", special:30, mrp:30, barcode:null},
+    {id:"P018",name:"Bisk Farm Top Gold",                unit:"1 pcs",  emoji:"🥇", special:30, mrp:30, barcode:null},
+    {id:"P019",name:"Bisk Farm Top Herbs",               unit:"1 pcs",  emoji:"🌿", special:35, mrp:35, barcode:null},
+    {id:"P020",name:"Bisk Farm Top Herbs",               unit:"1 pcs",  emoji:"🌿", special:35, mrp:35, barcode:null},
+    {id:"P021",name:"Britannia 50-50 Golmaal Kala Jeera",unit:"1 pcs",  emoji:"🍪", special:30, mrp:30, barcode:null},
+    {id:"P022",name:"Britannia 50-50 Golmal Top Butter", unit:"1 pcs",  emoji:"🧈", special:5,  mrp:5,  barcode:null},
+    {id:"P023",name:"Britannia 50-50 Marie Gold",        unit:"1 pcs",  emoji:"🍪", special:30, mrp:30, barcode:null},
+    {id:"P024",name:"Britannia 50-50 Top Butterly Bites",unit:"1 pcs",  emoji:"🧈", special:30, mrp:30, barcode:null},
+    {id:"P025",name:"Britannia Bourbon",                 unit:"1 pcs",  emoji:"🍫", special:35, mrp:35, barcode:null},
+    {id:"P026",name:"Britannia GoodDay Butter Cookies",  unit:"1 pcs",  emoji:"🧈", special:40, mrp:40, barcode:null},
+    {id:"P027",name:"Britannia GoodDay Cashew Almond",   unit:"1 pcs",  emoji:"🌰", special:40, mrp:40, barcode:null},
+    {id:"P028",name:"Britannia Milk Bikis",               unit:"1 pcs", emoji:"🥛", special:30, mrp:30, barcode:null},
+    {id:"P029",name:"Britannia NutriChoice Digestive High Fibre", unit:"1 pcs", emoji:"💚", special:55, mrp:55, barcode:null},
+    {id:"P030",name:"Coco Wonder",                        unit:"1 pcs",  emoji:"🍫", special:30, mrp:30, barcode:null},
+    {id:"P042",name:"Good Day",                            unit:"1 pcs",  emoji:"🧈", special:40, mrp:40, barcode:null},
+    {id:"P051",name:"Home Bake Premium Cookies (Green)",  unit:"1 pcs",  emoji:"🍪", special:55, mrp:55, barcode:null},
+    {id:"P052",name:"Home Bake Premium Cookies (Red)",    unit:"1 pcs",  emoji:"🍪", special:55, mrp:55, barcode:null},
+    {id:"P053",name:"Homebread Cookies",                  unit:"1 pcs",  emoji:"🍪", special:80, mrp:80, barcode:null},
+    {id:"P057",name:"Jeera Wonder",                        unit:"1 pcs",  emoji:"🌾", special:30, mrp:30, barcode:null},
+    {id:"P069",name:"Malkist Cheese Flavoured",           unit:"1 pcs",  emoji:"🧀", special:45, mrp:45, barcode:null},
+    {id:"P070",name:"Marie Gold",                          unit:"1 pcs",  emoji:"🍪", special:40, mrp:40, barcode:null},
+    {id:"P073",name:"Biskfarm Mast Jeera",                unit:"1 pcs",  emoji:"🌾", special:45, mrp:45, barcode:null},
+    {id:"P074",name:"Milk Kut Champ",                      unit:"1 pcs",  emoji:"🥛", special:25, mrp:25, barcode:null},
+    {id:"P081",name:"Nutri Choice",                        unit:"1 pcs",  emoji:"💚", special:10, mrp:10, barcode:null},
+    {id:"P082",name:"Oreo",                                unit:"1 pcs",  emoji:"⚫", special:10, mrp:10, barcode:null},
+    {id:"P083",name:"Parle Monaco Classic",               unit:"1 pcs",  emoji:"🍪", special:70, mrp:70, barcode:null},
+    {id:"P084",name:"Ruskit",                              unit:"1 pcs",  emoji:"🍞", special:40, mrp:40, barcode:null},
+    {id:"P089",name:"Snfeast Mom's Magic Ghee Rosted",    unit:"1 pcs",  emoji:"🍪", special:5,  mrp:5,  barcode:null},
+    {id:"P094",name:"Unickk Butter Maska",                unit:"1 pcs",  emoji:"🧈", special:10, mrp:10, barcode:null},
+    {id:"P095",name:"Unickk Snackker",                    unit:"1 pcs",  emoji:"🍪", special:10, mrp:10, barcode:null},
+  ]},
+  { name:"Noodles", emoji:"🍜", sub:"Jaldi banao, maze se khao!", brands:[
+    {id:"P034",name:"Dodo Noodle's Special",              unit:"1 pcs",  emoji:"🍜", special:80, mrp:80, barcode:null},
+  ]},
+  { name:"Energy Drinks", emoji:"⚡", sub:"Energy badhao!", brands:[
+    {id:"P040",name:"Glucon-D Regular",                    unit:"1 pcs",  emoji:"⚡", special:39, mrp:39, barcode:null},
+    {id:"P041",name:"Glucon-D Tangy Orange",               unit:"1 pcs",  emoji:"🍊", special:55, mrp:55, barcode:null},
   ]},
   { name:"Dry Cakes", emoji:"🎂", sub:"Sweet snack anytime!", brands:[
-    {id:"P026",name:"Britannia Cake Gobbles Fruity",unit:"1 pcs",emoji:"🎂",special:10,mrp:12, barcode:null},
-    {id:"P097",name:"Sliced Fruit Cake",         unit:"1 pcs",  emoji:"🍰", special:65, mrp:78,  barcode:null},
-    {id:"P106",name:"Tiffun Mawa Cake Small",    unit:"1 pcs",  emoji:"🍮", special:10, mrp:12,  barcode:null},
-    {id:"P107",name:"Tiffun Mawa Cake Big",      unit:"1 pcs",  emoji:"🍮", special:20, mrp:24,  barcode:null},
+    {id:"P039",name:"Fruit Cake",                          unit:"1 pcs",  emoji:"🎂", special:80, mrp:80, barcode:null},
+    {id:"P088",name:"Sliced Fruit Cake",                   unit:"1 pcs",  emoji:"🍰", special:65, mrp:65, barcode:null},
+    {id:"P092",name:"Tiffun Slice Mawa Cake Big",          unit:"1 pcs",  emoji:"🍮", special:20, mrp:20, barcode:null},
+    {id:"P093",name:"Tiffun Slice Mawa Cake Small",        unit:"1 pcs",  emoji:"🍮", special:10, mrp:10, barcode:null},
   ]},
-  { name:"Batteries", emoji:"🔋", sub:"Power on raho!", brands:[
-    {id:"P086",name:"Eveready AA Battery",       unit:"1 pcs",  emoji:"🔋", special:12, mrp:15,  barcode:"8901902058031"},
-    {id:"P087",name:"Eveready AAA Battery",      unit:"1 pcs",  emoji:"🔋", special:10, mrp:12,  barcode:"8901902058048"},
+  { name:"Chutney & Sauces", emoji:"🫙", sub:"Taste badhao!", brands:[
+    {id:"P078",name:"Nilon's Green Chilly Sauce",          unit:"90 g",   emoji:"🌶️", special:25, mrp:25, barcode:null},
+    {id:"P079",name:"Nilon's Red Chilly Sauce",            unit:"80 g",   emoji:"🍅", special:25, mrp:25, barcode:null},
+    {id:"P080",name:"Nilon's Schezwan Chutney",            unit:"80 g",   emoji:"🌶️", special:35, mrp:35, barcode:null},
+  ]},
+  { name:"Snacks", emoji:"🍿", sub:"Munch time!", brands:[
+    {id:"P068",name:"Kurkure Puffcorn",                    unit:"1 pcs",  emoji:"🍿", special:10, mrp:10, barcode:null},
+  ]},
+  { name:"Milk Mix", emoji:"🥛", sub:"Dum ke saath bado!", brands:[
+    {id:"P054",name:"Horlicks",                             unit:"1 kg",   emoji:"🥛", special:264, mrp:264, barcode:null},
+  ]},
+  { name:"Salts", emoji:"🧂", sub:"Khane ka swad badhao!", brands:[
+    {id:"P091",name:"Tata Salt",                            unit:"1 kg",   emoji:"🧂", special:30, mrp:30, barcode:null},
+  ]},
+  { name:"Detergents", emoji:"🧺", sub:"Kapde saaf, chamakdar!", brands:[
+    {id:"P087",name:"Surf Excel Detergent",                unit:"500 g",  emoji:"🧺", special:71, mrp:71, barcode:null},
   ]},
 ];
 
 const topDeals = [
-  {id:1,tag:"Grains",name:"Ashirwad Aatta",    emoji:"🌾",special:240,mrp:283,unit:"5 kg",   barcode:"8901725121129"},
-  {id:2,tag:"Oil",   name:"Independence Oil",  emoji:"🛢️",special:170,mrp:195,unit:"1 L",    barcode:null},
-  {id:3,tag:"Oil",   name:"Sadabahar Oil",      emoji:"🫙",special:175,mrp:200,unit:"1 L",    barcode:null},
-  {id:4,tag:"Oil",   name:"Fortune Refine Oil", emoji:"🍳",special:155,mrp:178,unit:"750 ml", barcode:"8901030869419"},
-  {id:5,tag:"Oil",   name:"Kings Refine Oil",   emoji:"👑",special:135,mrp:155,unit:"750 ml", barcode:null},
-  {id:6,tag:"Pulses",name:"Mashoor Daal",        emoji:"🫘",special:100,mrp:118,unit:"1 kg",   barcode:null},
-  {id:7,tag:"Biscuits",name:"GoodDay Cashew Almond",emoji:"🌰",special:40,mrp:48,unit:"1 pcs",barcode:"8901063033764"},
-  {id:8,tag:"Personal",name:"Dant Kanti 200g",  emoji:"🦷",special:106,mrp:125,unit:"200 g",  barcode:"8906003411092"},
+  {id:1,tag:"Grains", name:"Aashirvaad Shud Chakki Aata", emoji:"🌾",special:240, mrp:240, unit:"5 kg",  barcode:null},
+  {id:2,tag:"Oil",     name:"Fortune Soya Refine",         emoji:"🍳",special:145, mrp:145, unit:"1 L",   barcode:null},
+  {id:3,tag:"Pulses",  name:"Arahar Dal",                  emoji:"🫘",special:130, mrp:130, unit:"1 kg",  barcode:null},
+  {id:4,tag:"Milk Mix",name:"Horlicks",                    emoji:"🥛",special:264, mrp:264, unit:"1 kg",  barcode:null},
+  {id:5,tag:"Salts",   name:"Tata Salt",                   emoji:"🧂",special:30,  mrp:30,  unit:"1 kg",  barcode:null},
+  {id:6,tag:"Biscuits",name:"Britannia GoodDay Cashew Almond", emoji:"🌰",special:40, mrp:40, unit:"1 pcs", barcode:null},
+  {id:7,tag:"Dairy",   name:"Amul Ghee",                   emoji:"🧈",special:55,  mrp:55,  unit:"1 kg",  barcode:null},
+  {id:8,tag:"Biscuits",name:"Parle Monaco Classic",        emoji:"🍪",special:70,  mrp:70,  unit:"1 pcs", barcode:null},
 ];
 
 let allItems = [];
@@ -544,11 +519,11 @@ function renderDeals() {
       ? `<button class="deal-add-btn" onclick="addDeal(${d.id})">+ ADD</button>`
       : `<div class="deal-qty-ctrl"><button class="dqc-btn" onclick="decDeal(${d.id})">−</button><span class="dqc-num">${qty}</span><button class="dqc-btn" onclick="incDeal(${d.id})">+</button></div>`;
     return `<div class="deal-card">
-      <div class="deal-discount">🏷 ${dp}% OFF</div>
+      <div class="deal-discount">${dp>0?`🏷 ${dp}% OFF`:""}</div>
       ${imgEl(d.barcode, d.emoji, 'deal-img-wrap')}
       <div class="deal-name">${d.name}</div>
       <div class="deal-unit-text">${d.unit} · ${d.tag}</div>
-      <div class="deal-price-row"><span class="deal-price">₹${d.special}</span><span class="deal-mrp">₹${d.mrp}</span></div>
+      <div class="deal-price-row"><span class="deal-price">₹${d.special}</span>${d.mrp>d.special?`<span class="deal-mrp">₹${d.mrp}</span>`:""}</div>
       <div id="dc_${d.id}">${ctrl}</div>
     </div>`;
   }).join("");
@@ -591,11 +566,11 @@ function renderBrandSections() {
             ? `<button class="product-add-btn" onclick="addBrand('${key}','${b.name.replace(/'/g,"\\'")}','${b.unit}','${cat.name}','${b.emoji}',${b.special},${b.mrp})">+ ADD</button>`
             : `<div class="product-qty-ctrl"><button class="pqc-btn" onclick="decBrand('${key}')">−</button><span class="pqc-num">${qty}</span><button class="pqc-btn" onclick="incBrand('${key}')">+</button></div>`;
           return `<div class="product-card">
-            <div class="product-discount-tag">${dp}% OFF</div>
+            ${dp>0?`<div class="product-discount-tag">${dp}% OFF</div>`:""}
             ${imgEl(b.barcode, b.emoji, 'product-img-wrap')}
             <div class="product-unit">${b.unit}</div>
             <div class="product-name">${b.name}</div>
-            <div class="product-price-row"><span class="product-price">₹${b.special}</span><span class="product-mrp">₹${b.mrp}</span></div>
+            <div class="product-price-row"><span class="product-price">₹${b.special}</span>${b.mrp>b.special?`<span class="product-mrp">₹${b.mrp}</span>`:""}</div>
             <div id="pc_${key}">${ctrl}</div>
           </div>`;
         }).join("")}
@@ -630,17 +605,16 @@ function refreshProductCard(key) {
 // ── Category nav ─────────────────────────────────────────────────────
 function buildCatRow() {
   const quickChips = [
-    {label:"🔥 Top Deals",keyword:null},
-    {label:"🌾 Atta",    keyword:"Grains"},
-    {label:"🛢️ Oil",     keyword:"Oil"},
-    {label:"🫘 Dal",     keyword:"Pulses"},
+    {label:"⭐ Top Picks",keyword:null},
+    {label:"🌾 Grains",   keyword:"Grains"},
+    {label:"🧀 Dairy",    keyword:"Dairy"},
+    {label:"🫘 Dal",      keyword:"Pulses"},
+    {label:"🛢️ Oil",      keyword:"Oil"},
+    {label:"🍪 Biscuits", keyword:"Biscuits"},
+    {label:"🍜 Noodles",  keyword:"Noodles"},
+    {label:"🎂 Dry Cakes",keyword:"Dry Cakes"},
+    {label:"🫙 Chutney",  keyword:"Chutney"},
     {label:"🧺 Detergent",keyword:"Detergent"},
-    {label:"🧼 Soaps",   keyword:"Soaps"},
-    {label:"🦷 Personal",keyword:"Personal"},
-    {label:"🍪 Biscuits",keyword:"Biscuits"},
-    {label:"🌶️ Masala", keyword:"Masala"},
-    {label:"🍯 Honey",   keyword:"Honey"},
-    {label:"🍫 Choco",   keyword:"Chocolate"},
   ];
   const chips = quickChips.map((c,i) =>
     `<button class="cat-pill${i===0?" active":""}" onclick="setActiveChip(this,'${c.keyword||""}')">${c.label}</button>`
@@ -683,11 +657,11 @@ function doSearch(q) {
       ? `<button class="product-add-btn" onclick="srAdd('${item.key}')">+ ADD</button>`
       : `<div class="product-qty-ctrl"><button class="pqc-btn" onclick="srDec('${item.key}')">−</button><span class="pqc-num">${qty}</span><button class="pqc-btn" onclick="srInc('${item.key}')">+</button></div>`;
     return `<div class="product-card">
-      <div class="product-discount-tag">${dp}% OFF</div>
+      ${dp>0?`<div class="product-discount-tag">${dp}% OFF</div>`:""}
       ${imgEl(item.barcode, item.emoji, 'product-img-wrap')}
       <div class="product-unit">${item.unit}</div>
       <div class="product-name">${item.name}</div>
-      <div class="product-price-row"><span class="product-price">₹${item.special}</span><span class="product-mrp">₹${item.mrp}</span></div>
+      <div class="product-price-row"><span class="product-price">₹${item.special}</span>${item.mrp>item.special?`<span class="product-mrp">₹${item.mrp}</span>`:""}</div>
       <div id="src_${item.key}">${ctrl}</div>
     </div>`;
   }).join("");
